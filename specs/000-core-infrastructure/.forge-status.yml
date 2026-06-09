@@ -1,0 +1,90 @@
+schema_version: 2
+feature: "000-core-infrastructure"
+title: "Minimal infrastructure (base DogTrain product)"
+created_at: "2026-06-09"
+feature_mode: "standard"
+phases:
+  problem_discovery: completed
+  research: completed
+  product_spec: completed
+  revalidation: approved
+  bridge: completed
+  plan: completed
+  tasks: completed
+  pre_impl_review: skipped
+  implement: completed
+  code_review: pending
+  verify: pending
+  test_plan: pending
+  test_run: pending
+  release_readiness: pending
+  retrospective: pending
+speckit_mode: "classic"
+testing:
+  final_pass_rate: ""
+  bugs_found: 0
+  bugs_fixed: 0
+  bugs_deferred: 0
+  test_runs_total: 0
+gates:
+  - phase: problem_discovery
+    decision: "go"
+    by: "Valentyn"
+    at: "2026-06-09"
+    note: "Цінність підтверджена активацією; проблема щоденна; корінь відтоку винесено в retention-фічі (Фаза 2-3)."
+  - phase: research
+    decision: "approved"
+    by: "Valentyn"
+    at: "2026-06-09"
+    note: "Approve — 5 дименсій, реальні бенчмарки; розрив ринку підтверджено."
+  - phase: product_spec
+    decision: "approved"
+    by: "Valentyn"
+    at: "2026-06-09"
+    note: "PRD v1.1 з 5 рішеннями (trial одразу, догляд у скоупі, 3 завдання D0, 8 кроків, HTML mobile-first)."
+  - phase: revalidation
+    decision: "approved"
+    by: "Valentyn"
+    at: "2026-06-09"
+    note: "continue — 5 рішень внесено, spec залочено (review.md APPROVED)."
+  - phase: bridge
+    decision: "completed"
+    by: "orchestrator"
+    at: "2026-06-09"
+    note: "spec.md створено (classic mode, shared-infrastructure, Consumer Contract для Фази 3)."
+  - phase: plan
+    decision: "completed"
+    by: "orchestrator"
+    at: "2026-06-09"
+    note: "plan.md — HTML mobile-first prototype, Constitution Check пройдено."
+  - phase: tasks
+    decision: "completed"
+    by: "orchestrator"
+    at: "2026-06-09"
+    note: "tasks.md — 32 задачі за user stories; 2-тижневий командний To-Do винесено в retention-MVP (Фаза 3)."
+decisions_log:
+  - "Онбординг = 8 кроків (одне рішення/крок) — рішення користувача"
+  - "D0 показує 3 завдання — рішення користувача"
+  - "Блок догляд/здоров'я у скоупі фундаменту (нагадування зараз) — рішення користувача"
+  - "Trial вмикається одразу без картки; paywall не ріже першу перемогу — рішення користувача"
+  - "Стек = клікабельні HTML-прототипи, mobile-first — рішення користувача"
+research_dimensions:
+  competitors: completed
+  ux_patterns: completed
+  codebase: completed
+  tech_stack: completed
+  metrics_roi: completed
+input_richness_score: 7
+sync_runs:
+  last_run: "2026-06-09T00:00:00Z"
+  total_runs: 1
+  last_drift_count: 4
+  last_critical_count: 0
+  last_verdict: "CONSISTENT (after fix)"
+change_requests: []
+problem:
+  statement: "Власник собаки не має одного місця для персонального щоденного догляду й видимого прогресу і не впевнений, що дбає правильно."
+  severity: "7/10"
+  validation: "Moderate-Strong"
+  go_decision: "go"
+last_updated: "2026-06-09T00:00:00Z"

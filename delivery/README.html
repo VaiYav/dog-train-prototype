@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DogTrain — Retention Test Case · Submission</title>
+<style>
+  :root {
+    --ink:#1f2430; --muted:#5b6472; --line:#e7e3da; --bg:#fbfaf7; --card:#ffffff;
+    --amber:#e08a2b; --amber-soft:#fbe6cf; --teal:#1f8a8a; --teal-soft:#dff0ef;
+    --code:#f4f1ea; --ok:#2f8f4e; --warn:#c47d12; --crit:#c0392b;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  .wrap { max-width:880px; margin:0 auto; padding:40px 24px 80px; }
+  .topbar { background:linear-gradient(120deg,var(--amber),var(--teal)); height:6px; }
+  h1,h2,h3,h4 { line-height:1.25; color:var(--ink); }
+  h1 { font-size:2rem; margin:.2em 0 .5em; }
+  h2 { font-size:1.4rem; margin:1.9em 0 .6em; padding-bottom:.3em; border-bottom:2px solid var(--amber-soft); }
+  h3 { font-size:1.12rem; margin:1.5em 0 .4em; color:#2b3340; }
+  h4 { font-size:1rem; margin:1.2em 0 .3em; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  p,li { color:#2b3340; }
+  a { color:var(--teal); }
+  blockquote { margin:1.1em 0; padding:.6em 1.1em; background:var(--teal-soft);
+    border-left:4px solid var(--teal); border-radius:6px; color:#214b4b; }
+  blockquote p { margin:.3em 0; color:#214b4b; }
+  code { background:var(--code); padding:.12em .4em; border-radius:5px;
+    font:.86em "SF Mono",Menlo,Consolas,monospace; }
+  pre { background:#272b33; color:#e6e6e6; padding:16px 18px; border-radius:10px;
+    overflow:auto; font-size:.84rem; line-height:1.5; }
+  pre code { background:none; padding:0; color:inherit; }
+  table { border-collapse:collapse; width:100%; margin:1.2em 0; font-size:.93rem;
+    background:var(--card); border-radius:10px; overflow:hidden; box-shadow:0 1px 0 var(--line); }
+  th,td { text-align:left; padding:10px 13px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { background:var(--amber-soft); color:#6a4513; font-weight:650; }
+  tr:last-child td { border-bottom:none; }
+  td:first-child { font-weight:500; }
+  hr { border:none; border-top:1px solid var(--line); margin:2em 0; }
+  ul,ol { padding-left:1.3em; }
+  li { margin:.25em 0; }
+  .meta { color:var(--muted); font-size:.9rem; }
+  .doc-foot { margin-top:60px; padding-top:18px; border-top:1px solid var(--line);
+    color:var(--muted); font-size:.84rem; }
+  @media print { .topbar{display:none} body{background:#fff} .wrap{padding:0} }
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<div class="wrap">
+<h1 id="dogtrain-retention-test-case-submission">DogTrain — Retention Test Case · Submission</h1>
+<blockquote>
+<p><strong>Genesis · Product test case.</strong> Як я підходжу до відтоку DogTrain: від діагнозу → до однієї валідовної фічі → до плану, хто і як це будує паралельно.
+Автор: Valentyn · Дата: 2026-06-09 · 🎥 Loom — у кінці документа.</p>
+</blockquote>
+<hr />
+<h2 id="tldr-30">TL;DR (30 секунд)</h2>
+<p>Проблема — <strong>80% нових кидають на 2–3 день</strong>. Це <strong>не «бракує функцій»</strong>, а зламана <strong>рання утримуваність</strong>: немає тригера повернення, немає винагороди, тижневий план перевантажує. Day 2 — «день рішення».</p>
+<p>Я не вибирав фічі серцем — порахував <strong>RICE</strong>. Переможець: <strong>«Daily Focus loop»</strong> — щоденне нагадування (тригер) + простий стрік (винагорода) на екрані «Сьогодні». <strong>Без кастомного AI</strong>, валідовно за 2 тижні наявною командою, чисто заміряється A/B на <strong>D2 retention</strong>.</p>
+<p>Решту (5 AI-фіч + product tour) я <strong>не вкидаю в MVP</strong> — виношу в роадмеп зі спільним enabler'ом і показую, <strong>хто й що будує паралельно</strong> (матриця нижче).</p>
+<hr />
+<h2 id="_1">Як читати цей пакет</h2>
+<table>
+<thead>
+<tr>
+<th>Хочу побачити</th>
+<th>Де</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🖱 <strong>Клікабельні прототипи</strong></td>
+<td><a href="../specs/000-core-infrastructure/prototype/index.html">Фундамент MVP</a> · <a href="../specs/001-daily-focus/prototype/index.html">Daily Focus A/B</a></td>
+</tr>
+<tr>
+<td>🎯 Аналіз відтоку (Q1–Q3 + RICE)</td>
+<td><a href="../docs/product/01-churn-analysis.md">01-churn-analysis</a></td>
+</tr>
+<tr>
+<td>🛠 ТЗ обраної фічі (MVP)</td>
+<td><a href="../specs/001-daily-focus/plan.md">001-daily-focus/plan.md</a> + <a href="../specs/001-daily-focus/spec.md">spec.md</a></td>
+</tr>
+<tr>
+<td>🧩 <strong>Декомпозиція на задачі</strong> (2 тижні)</td>
+<td><a href="./01-execution-plan.md">01-execution-plan</a></td>
+</tr>
+<tr>
+<td>🔀 <strong>Матриця паралельної розробки</strong></td>
+<td><a href="./02-feature-matrix.md">02-feature-matrix</a></td>
+</tr>
+<tr>
+<td>🧠 Логіка рішень / виступ</td>
+<td><a href="../docs/product/03-rationale.md">03-rationale</a> · <a href="../docs/product/04-speech.md">04-speech (Loom-скрипт)</a></td>
+</tr>
+<tr>
+<td>🗺 Весь пакет (хаб)</td>
+<td><a href="../docs/index.html">docs/index.html</a></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_2">Покриття завдання (нічого не загублено)</h2>
+<h3 id="_3">🎯 Аналіз проблеми відтоку</h3>
+<table>
+<thead>
+<tr>
+<th>Пункт</th>
+<th>Де</th>
+<th>Статус</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q1 — івенти Day1/Day2 (когорти, ≥3)</td>
+<td><a href="../docs/product/01-churn-analysis.md">churn-analysis §Q1</a></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Q2 — 5 гіпотез + аргументація + перевірка</td>
+<td><a href="../docs/product/01-churn-analysis.md">§Q2</a></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Q3 — RICE + обґрунтування Confidence</td>
+<td><a href="../docs/product/01-churn-analysis.md">§Q3</a></td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mvp-daily-focus">🛠 План дій (MVP обраної фічі — Daily Focus)</h3>
+<table>
+<thead>
+<tr>
+<th>Пункт</th>
+<th>Де</th>
+<th>Статус</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Гіпотеза «Як… хочу… щоб…»</td>
+<td><a href="../specs/001-daily-focus/spec.md">spec.md</a></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>UX/UI-ідеї + шаблони</td>
+<td><a href="../specs/001-daily-focus/plan.md">plan.md §1</a> + <a href="../specs/001-daily-focus/prototype/index.html">прототип</a></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Логіка реалізації (кроки + система)</td>
+<td><a href="../specs/001-daily-focus/plan.md">plan.md §2</a></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Primary + Guardrail метрики</td>
+<td><a href="../specs/001-daily-focus/plan.md">plan.md §3</a></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Acceptance criteria</td>
+<td><a href="../specs/001-daily-focus/checklist.md">checklist.md</a></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>To-Do команди на 2 тижні</td>
+<td><a href="../specs/001-daily-focus/tasks.md">tasks.md</a> + <a href="./01-execution-plan.md">execution-plan</a></td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_4">📁 Формат</h3>
+<table>
+<thead>
+<tr>
+<th>Пункт</th>
+<th>Статус</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Структурований документ (схеми, mockups, bullet-структура)</td>
+<td>✅ (md+html, ASCII-wireframes, клікабельні прототипи)</td>
+</tr>
+<tr>
+<td>Loom-відео ≤5 хв (логіка / вибір / вплив)</td>
+<td>🎬 скрипт готовий (<a href="../docs/product/04-speech.md">04-speech</a>), запис — нижче</td>
+</tr>
+<tr>
+<td>Loom-посилання в кінці документа</td>
+<td>👇 див. останній блок</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="retention">Що / Як / Хто / Який retention (коротко, «моя» подача)</h2>
+<p><strong>ЩО валідуємо:</strong> одну гіпотезу — <em>чи поверне щоденне нагадування + стрік людей на Day 2–3</em>. Не повний продукт, а <strong>найдешевший зріз петлі</strong>.</p>
+<p><strong>ЯК:</strong> A/B на нових користувачах 50/50. Control = поточний фундамент. Variant = «Сьогодні» + стрік + щоденне нагадування. Реалізація — детермінована (без AI), щоб встигнути за 2 тижні й чисто заміряти.</p>
+<p><strong>ХТО (2 тижні, 2 dev + 0.5 designer + 0.5 analyst):</strong> два паралельні треки — Dev A робить петлю/стрік/UI, Dev B — нагадування/аналітику/A/B; дизайнер PT — макети станів і копірайт, аналітик PT — pre-registration, дашборд, guardrails. Деталі — <a href="./01-execution-plan.md">execution-plan</a>.</p>
+<p><strong>ЯКИЙ retention:</strong> Primary — <strong>D2 retention</strong> (повернувся + ≥1 завдання). Це випереджальний індикатор D7/D30 і LTV; саме на D2–3 гине 80%, тож зрушення тут напряму збільшує активну базу. Guardrails не дають «накрутити» утримання ціною досвіду (opt-out/uninstall, TTV, рейтинг).</p>
+<blockquote>
+<p>Чесно: усі числа — <strong>позначені оцінки</strong> (реальних даних DogTrain немає). Тому крок №1 фундаменту — підняти аналітику, щоб за тиждень рахувати ефект фактично.</p>
+</blockquote>
+<hr />
+<h2 id="loom-5">🎥 Loom (≤5 хв)</h2>
+<p>Скрипт виступу (логіка гіпотез · вибір фіч і пріоритетів · вплив на поведінку): <a href="../docs/product/04-speech.md">04-speech.md</a>.</p>
+<p><strong>Посилання на Loom-відео:</strong> <code>__________________________</code>  <em>(вставити після запису)</em></p>
+<div class="doc-foot">DogTrain · згенеровано з Markdown · README.md</div>
+</div>
+</body>
+</html>

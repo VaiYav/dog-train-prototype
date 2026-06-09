@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DogTrain — Daily Focus loop (A/B прототип)</title>
+<link rel="stylesheet" href="shared/tokens.css">
+<link rel="stylesheet" href="daily-focus/daily-focus.css">
+</head>
+<body>
+<div class="phone">
+  <div class="notch"></div>
+  <div class="abbar">
+    <div class="seg" id="seg">
+      <button id="segC" class="on" onclick="setVariant('control')">Control</button>
+      <button id="segV" onclick="setVariant('variant')">🔥 Daily Focus</button>
+    </div>
+    <div class="abnote" id="abnote">A/B: control — фундамент без активного стріку/нагадування</div>
+  </div>
+
+  <div class="viewport" id="vp">
+    <div id="reminderSlot"></div>
+    <div class="hdr">
+      <h2>Рекс 🐶</h2>
+      <span class="streak off" id="streak" title="">🔥 0</span>
+    </div>
+    <div id="bannerSlot"></div>
+    <div class="day" id="dayLabel">Сьогодні · День 1</div>
+    <div id="taskList"></div>
+  </div>
+
+  <div class="controls">
+    <button class="primary" onclick="nextDay()">⏭ Наступний день</button>
+    <button onclick="resetDemo()">↺ Скинути</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <div class="overlay" id="optin">
+    <div class="sheet">
+      <div style="font-size:2.6rem">🔔</div>
+      <h2 style="margin:.2em 0">Чудово, перша перемога! 🎉</h2>
+      <p class="abnote" style="font-size:.9rem">Нагадати завтра подбати про Рекса? Обери час:</p>
+      <div class="times" id="times">
+        <button onclick="pickTime(this,'Ранок 8:00')">🌅 Ранок</button>
+        <button onclick="pickTime(this,'День 13:00')">☀️ День</button>
+        <button class="sel" onclick="pickTime(this,'Вечір 18:00')">🌙 Вечір</button>
+        <button onclick="pickTime(this,'Свій час')">⏰ Свій час</button>
+      </div>
+      <button class="btn" onclick="enableReminder()">Увімкнути нагадування</button>
+      <button class="btn sec" onclick="closeOptin()">Не зараз</button>
+    </div>
+  </div>
+  <div class="confetti" id="confetti"></div>
+
+  <button class="evtoggle" onclick="toggleEv()">📊 events</button>
+  <div class="evdrawer" id="evdrawer">
+    <header><b>trackEvent() — з тегом variant</b><button class="btn sec" style="width:auto;color:#9fe3da" onclick="toggleEv()">Закрити ✕</button></header>
+    <div class="log" id="evlog"></div>
+    <div style="padding:10px 14px;border-top:1px solid #2a323c;font-size:11px;color:#6b7b88">Кожна подія тегнута <code style="color:#7fd1c8">variant</code> — основа A/B-аналізу (Primary: D2 retention).</div>
+  </div>
+</div>
+
+<div class="sidenote">
+  <h3>🔥 Daily Focus loop — A/B прототип</h3>
+  <p><b>Перемикай Control ↔ Daily Focus</b> угорі — і дивись різницю.</p>
+  <p><b>Variant</b> додає: живий <b>стрік</b>, контекстне <b>нагадування</b> (після першої перемоги), мікросвята на 3/7 днів і <b>гуманну заморозку</b> при пропуску.</p>
+  <p>Тисни <b>⏭ Наступний день</b>, щоб побачити, як росте серія й приходить нагадування. Пропусти день (не виконавши завдань) — побачиш ❄️ заморозку замість покарання.</p>
+  <p><code>📊 events</code> — лог із тегом <code>variant</code> (Primary-метрика: D2 retention).</p>
+  <p><a href="index.html">← Фундамент + AI (000 + 002–006)</a></p>
+</div>
+
+<script src="daily-focus/daily-focus.js"></script>
+</body>
+</html>

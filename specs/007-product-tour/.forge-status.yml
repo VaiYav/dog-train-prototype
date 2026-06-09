@@ -1,0 +1,29 @@
+schema_version: 2
+feature: "007-product-tour"
+title: "Product Tour — guided walkthrough / coach marks (NON-AI)"
+created_at: "2026-06-09"
+feature_mode: "lite"
+feature_type: "end_user"
+ai_llm: false   # детермінована фіча (coach marks), без AI/LLM
+phases:
+  problem_discovery: completed
+  research: completed       # reuse: in-app guidance patterns (tooltips, coach marks, progressive)
+  product_spec: completed   # folded into spec.md
+  revalidation: approved
+  bridge: completed
+  plan: completed
+  tasks: completed
+  implement: completed      # реалізовано як <dt-product-tour> у /prototype
+  verify: completed
+speckit_mode: "classic"
+hypothesis: "Короткий guided tour ключових екранів → швидше розуміння цінності → активація/feature adoption"
+depends_on: "000-core-infrastructure (Today/Care/Progress surfaces, analytics, getVariant)"
+note: "Реалізовано як детермінований <dt-product-tour> у спільному /prototype (coach marks)."
+experiment:
+  primary_metric: "activation / key-feature adoption (tour vs no-tour); tour completion rate"
+  guardrails: ["time-to-value не гірше", "skip-rate", "drop-off під час туру", "uninstall"]
+gates:
+  - { phase: tasks, decision: completed, by: orchestrator, at: "2026-06-09", note: "Forge-документація готова; implement за користувачем." }
+  - { phase: implement, decision: completed, by: orchestrator, at: "2026-06-09", note: "Детермінований тур (coach marks) як <dt-product-tour>: 4 кроки (ring+spotlight), Далі/Пропустити/Готово, S.tourSeen (показ раз) + «?» relaunch, дефолт-тригер після першої перемоги (pushDecision, не блокує TTV), події tour_started/step/completed/skipped, A/B getVariant('product_tour'), a11y (focus/aria/reduced-motion)." }
+  - { phase: verify, decision: completed, by: orchestrator, at: "2026-06-09", note: "Перевірено в браузері (Playwright): auto-start після першої перемоги (manual:false), 4 кроки → completed, tourSeen persisted, relaunch (manual:true), skip, A/B control = тур схований. 0 console errors." }
+last_updated: "2026-06-09T00:00:00Z"

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DogTrain — Майстер-план тест-кейсу</title>
+<style>
+  :root {
+    --ink:#1f2430; --muted:#5b6472; --line:#e7e3da; --bg:#fbfaf7; --card:#ffffff;
+    --amber:#e08a2b; --amber-soft:#fbe6cf; --teal:#1f8a8a; --teal-soft:#dff0ef;
+    --code:#f4f1ea; --ok:#2f8f4e; --warn:#c47d12; --crit:#c0392b;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  .wrap { max-width:880px; margin:0 auto; padding:40px 24px 80px; }
+  .topbar { background:linear-gradient(120deg,var(--amber),var(--teal)); height:6px; }
+  h1,h2,h3,h4 { line-height:1.25; color:var(--ink); }
+  h1 { font-size:2rem; margin:.2em 0 .5em; }
+  h2 { font-size:1.4rem; margin:1.9em 0 .6em; padding-bottom:.3em; border-bottom:2px solid var(--amber-soft); }
+  h3 { font-size:1.12rem; margin:1.5em 0 .4em; color:#2b3340; }
+  h4 { font-size:1rem; margin:1.2em 0 .3em; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  p,li { color:#2b3340; }
+  a { color:var(--teal); }
+  blockquote { margin:1.1em 0; padding:.6em 1.1em; background:var(--teal-soft);
+    border-left:4px solid var(--teal); border-radius:6px; color:#214b4b; }
+  blockquote p { margin:.3em 0; color:#214b4b; }
+  code { background:var(--code); padding:.12em .4em; border-radius:5px;
+    font:.86em "SF Mono",Menlo,Consolas,monospace; }
+  pre { background:#272b33; color:#e6e6e6; padding:16px 18px; border-radius:10px;
+    overflow:auto; font-size:.84rem; line-height:1.5; }
+  pre code { background:none; padding:0; color:inherit; }
+  table { border-collapse:collapse; width:100%; margin:1.2em 0; font-size:.93rem;
+    background:var(--card); border-radius:10px; overflow:hidden; box-shadow:0 1px 0 var(--line); }
+  th,td { text-align:left; padding:10px 13px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { background:var(--amber-soft); color:#6a4513; font-weight:650; }
+  tr:last-child td { border-bottom:none; }
+  td:first-child { font-weight:500; }
+  hr { border:none; border-top:1px solid var(--line); margin:2em 0; }
+  ul,ol { padding-left:1.3em; }
+  li { margin:.25em 0; }
+  .meta { color:var(--muted); font-size:.9rem; }
+  .doc-foot { margin-top:60px; padding-top:18px; border-top:1px solid var(--line);
+    color:var(--muted); font-size:.84rem; }
+  @media print { .topbar{display:none} body{background:#fff} .wrap{padding:0} }
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<div class="wrap">
+<h1 id="dogtrain-">DogTrain — Майстер-план тест-кейсу</h1>
+<blockquote>
+<p><strong>Документ-орієнтир.</strong> Тут зібрано «що, навіщо і в якому порядку» ми робимо. Усі інші артефакти підпорядковані цьому плану і мають на нього посилатися.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Продукт</strong></td>
+<td>DogTrain — мобільний застосунок для власників собак (здоров'я, активність, розвиток в одному місці)</td>
+</tr>
+<tr>
+<td><strong>Тип роботи</strong></td>
+<td>Тест-кейс: аналіз відтоку + MVP-прототип фічі через Product Forge / SpecKit flow</td>
+</tr>
+<tr>
+<td><strong>Автор</strong></td>
+<td>Valentyn</td>
+</tr>
+<tr>
+<td><strong>Дата</strong></td>
+<td>2026-06-09</td>
+</tr>
+<tr>
+<td><strong>Версія плану</strong></td>
+<td>1.0</td>
+</tr>
+<tr>
+<td><strong>Мова артефактів</strong></td>
+<td>Українська</td>
+</tr>
+<tr>
+<td><strong>Формати звітів</strong></td>
+<td>Markdown + HTML</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="1">1. Контекст продукту</h2>
+<p>DogTrain закриває для власника собаки чотири задачі в одному місці:</p>
+<ul>
+<li>персоналізовані рекомендації щодо догляду;</li>
+<li>трекінг прогулянок, активності та виконаних завдань;</li>
+<li>нагадування про важливі події (вакцинації, ветеринар, грумінг);</li>
+<li>індивідуальні плани тренувань і розвитку навичок.</li>
+</ul>
+<p><strong>Базовий цикл користувача (core loop), який уже описаний у сценарії:</strong></p>
+<pre><code>Встановлення → Профіль собаки (порода, вік, вага, активність)
+   → Онбординг-опитування → Персональний план догляду й активностей
+   → Щоденні відмітки виконаних завдань → Відстеження прогресу
+</code></pre>
+<h2 id="2">2. Проблема, яку розв'язуємо</h2>
+<blockquote>
+<p>За останній місяць <strong>понад 80% нових користувачів</strong> припиняють активно користуватись застосунком на <strong>2–3 день</strong>, <strong>не завершивши перший тижневий план</strong>.</p>
+</blockquote>
+<p>Це класична проблема <strong>активації та ранньої утримуваності (early retention)</strong>, а не залучення. Користувачі доходять до цінності, але не закріплюють звичку. Гіпотези про корінь проблеми (перевантаження тижневим планом, відсутність тригера повернення, відкладена «перша перемога») перевіряються у Фазі 2.</p>
+<h2 id="3">3. Що саме ми робимо (мапа на завдання)</h2>
+<p>Тест-кейс має дві частини. Нижче — пряме співвідношення питань завдання та артефактів, які на них відповідають.</p>
+<table>
+<thead>
+<tr>
+<th>Питання завдання</th>
+<th>Де відповідь</th>
+<th>Фаза</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🎯 Q1. Які продуктові івенти Day 1 / Day 2 порівнюємо між когортами (мін. 3)</td>
+<td><code>docs/product/01-churn-analysis.md</code> § Q1</td>
+<td>Фаза 2</td>
+</tr>
+<tr>
+<td>🎯 Q2. 5 гіпотез + аргументація + як перевіряємо</td>
+<td><code>docs/product/01-churn-analysis.md</code> § Q2</td>
+<td>Фаза 2</td>
+</tr>
+<tr>
+<td>🎯 Q3. Пріоритизація RICE + обґрунтування Confidence топ-фічі</td>
+<td><code>docs/product/01-churn-analysis.md</code> § Q3</td>
+<td>Фаза 2</td>
+</tr>
+<tr>
+<td>🛠 Гіпотеза у форматі «Як [користувач], я хочу… щоб…»</td>
+<td><code>specs/001-daily-focus/spec.md</code> + ТЗ у <code>plan.md</code></td>
+<td>Фаза 3</td>
+</tr>
+<tr>
+<td>🛠 UX/UI-ідеї (шаблони/приклади)</td>
+<td>Клікабельний прототип <code>prototype/daily-focus.html</code></td>
+<td>Фаза 3</td>
+</tr>
+<tr>
+<td>🛠 Логіка реалізації (кроки користувача + що в системі)</td>
+<td><code>specs/001-daily-focus/plan.md</code></td>
+<td>Фаза 3</td>
+</tr>
+<tr>
+<td>🛠 Метрики успіху: Primary + Guardrail</td>
+<td><code>specs/001-daily-focus/plan.md</code> § Метрики</td>
+<td>Фаза 3</td>
+</tr>
+<tr>
+<td>🛠 Acceptance criteria</td>
+<td><code>specs/001-daily-focus/spec.md</code> + <code>checklist.md</code></td>
+<td>Фаза 3</td>
+</tr>
+<tr>
+<td>🛠 To-Do команди на 2 тижні</td>
+<td><code>specs/001-daily-focus/tasks.md</code></td>
+<td>Фаза 3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-product-forge-speckit">4. Підхід: Product Forge + SpecKit</h2>
+<p>Ми не пишемо «простирадло тексту», а проганяємо роботу через <strong>Product Forge</strong> — оркестратор повного циклу, що передає фічу від ідеї до коду з <strong>людським гейтом після кожної фази</strong>. Кожна фаза дає конкретний артефакт:</p>
+<pre><code>Phase 0  Problem Discovery   → problem-statement.md, interview-script.md   [гейт: Go / No-Go]
+Phase 1  Research            → research/*.md                                [гейт: approve]
+Phase 2  Product Spec        → product-spec/README.md                       [гейт: approve]
+Phase 3  Revalidation        → review.md (APPROVED)                         [гейт: approve]
+Phase 4  Bridge → SpecKit    → spec.md                                      [гейт: approve]
+Phase 5  Plan                → plan.md                                      [гейт: approve]
+Phase 5B Tasks               → tasks.md                                     [гейт: approve]
+</code></pre>
+<p><strong>Режими (modes):</strong> <code>lite</code> / <code>standard</code> / <code>v-model</code>.
+- <strong>Мінімальна інфраструктура (Фаза 1 цього плану)</strong> проганяється в <strong>standard mode</strong> — щоб показати повний ланцюг трасування Research → Spec → Plan → Tasks.
+- <strong>Retention-MVP (Фаза 3)</strong> — теж standard, бо для нього критичні метрики, гейти й експеримент.</p>
+<blockquote>
+<p>Чому не одразу код: 80% відтоку — це гіпотеза про <em>поведінку</em>, а не про відсутність функції. Спочатку валідуємо проблему й найдешевший важіль, потім будуємо тільки те, що валідуємо.</p>
+</blockquote>
+<h2 id="5">5. Фазовий роадмеп</h2>
+<h3 id="0-">Фаза 0 — Майстер-план ✅ (цей документ)</h3>
+<p>Орієнтир, структура репозиторію, конфіг Product Forge.</p>
+<h3 id="1_1">Фаза 1 — Мінімальна інфраструктура 🔄 (зараз)</h3>
+<p>Базовий продукт DogTrain як фундамент, до якого кріпляться retention-фічі. Проганяємо Product Forge над <code>specs/000-core-infrastructure/</code>:
+- <strong>Phase 0 Problem Discovery</strong> — валідація кореневого JTBD власника собаки → <code>problem-discovery/</code>
+- далі по гейтах: Research → Product Spec → Bridge (<code>spec.md</code>) → Plan → Tasks.</p>
+<p>Скоуп інфраструктури (MVP-фундамент): профіль собаки, онбординг-опитування, генерація плану з шаблонів (без AI/ML), щоденні завдання + відмітки, базовий трекінг прогресу, продуктова аналітика (івенти).</p>
+<h3 id="2-q1q3">Фаза 2 — Аналіз відтоку (Q1–Q3)</h3>
+<p><code>docs/product/01-churn-analysis.md</code>: івенти Day1/Day2 для порівняння когорт, 5 гіпотез із методами перевірки, пріоритизація RICE, обґрунтування Confidence топ-фічі. <strong>Тут ми «думаємо по кожній фічі».</strong></p>
+<h3 id="3-mvp-retention-rice">Фаза 3 — MVP retention-фічі (топ-RICE)</h3>
+<p><code>specs/001-daily-focus/</code>: повний Product Forge/SpecKit-пакет на обрану фічу + технічне завдання (user story, UX/UI, логіка, метрики, acceptance) + <strong>клікабельний HTML-прототип</strong> + To-Do команди на 2 тижні. Дизайн A/B-експерименту для валідації.</p>
+<h3 id="4-">Фаза 4 — Валідація та сторінка-хаб</h3>
+<p>HTML-версії всіх звітів, <code>docs/index.html</code> як єдина точка входу, перевірка математики RICE, узгодженості артефактів і працездатності прототипу.</p>
+<h3 id="5-ai-track">Фаза 5 — AI/персоналізація track (беклог + перша фіча)</h3>
+<p><code>docs/product/02-ai-ideas-backlog.md</code>: 5 згрумлених AI/LLM-фіч (Q&amp;A «Запитай про Рекса», порада дня, місії, швидкий лог, адаптація плану) — <strong>усі персоналізовані на даних користувача</strong>, поверх спільного <code>PersonalizationContext</code>. Зареєстровано в config як <code>002–006</code> + enabler.</p>
+<p><strong>Першу AI-фічу вже дофорджено:</strong> <code>003-ai-daily-tip</code> («AI порада дня», топ RICE-lite 731) — lite-forge + <strong>вбудовано в основний прототип</strong> як картка «💡 Порада дня для Рекса» угорі «Сьогодні» (у прототипі LLM імітовано правилами на даних собаки+прогресі; у проді — LLM на <code>PersonalizationContext</code>). Деталі — <a href="../specs/003-ai-daily-tip/README.md"><code>specs/003-ai-daily-tip/</code></a>.</p>
+<h2 id="6">6. Карта артефактів (структура репозиторію)</h2>
+<pre><code>test_case/
+├── CLAUDE.md                          # інструкції проєкту
+├── .specify/memory/constitution.md    # конституція продукту (Фаза 1)
+├── .product-forge/config.yml          # конфіг Product Forge
+├── docs/
+│   ├── 00-master-plan.md / .html      # ЦЕЙ документ
+│   ├── index.html                     # хаб усіх deliverables (Фаза 4)
+│   └── product/
+│       ├── 01-churn-analysis.md/.html # Q1–Q3 + RICE (Фаза 2)
+│       └── 02-ai-ideas-backlog.md/.html # 5 персоналізованих AI-фіч (Фаза 5)
+└── specs/
+    ├── 000-core-infrastructure/       # Product Forge: фундамент (Фаза 1)
+    │   ├── .forge-status.yml          # стан проходження фаз
+    │   ├── problem-discovery/
+    │   │   ├── problem-statement.md
+    │   │   └── interview-script.md
+    │   ├── research/                  # (наступний гейт)
+    │   ├── product-spec/              # (наступний гейт)
+    │   ├── spec.md / plan.md / tasks.md
+    └── 001-daily-focus/               # Product Forge: retention-MVP (Фаза 3)
+        ├── spec.md / plan.md / tasks.md / checklist.md
+        └── prototype/index.html       # клікабельний прототип
+</code></pre>
+<h2 id="7-3">7. Команда та обмеження (для Фази 3)</h2>
+<table>
+<thead>
+<tr>
+<th>Ресурс</th>
+<th>Обсяг</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Розробники</td>
+<td>2 (full-time)</td>
+</tr>
+<tr>
+<td>Дизайнер</td>
+<td>1 (part-time)</td>
+</tr>
+<tr>
+<td>Аналітик</td>
+<td>1 (part-time)</td>
+</tr>
+<tr>
+<td>Час</td>
+<td>2 тижні</td>
+</tr>
+<tr>
+<td>Обмеження</td>
+<td>Без кастомних AI/ML рішень, якщо їх не можна зробити силами команди за 2 тижні</td>
+</tr>
+</tbody>
+</table>
+<p>Ці обмеження — головний фільтр пріоритизації: фіча, яку не можна валідувати за 2 тижні наявною командою, програє в RICE за рахунок Effort/Confidence.</p>
+<h2 id="8">8. Робочі домовленості</h2>
+<ul>
+<li><strong>Мова</strong> всіх deliverables — українська; UI-тексти прототипу — українською.</li>
+<li><strong>Формати</strong> звітів — Markdown + HTML (HTML генерується з MD для верності змісту).</li>
+<li><strong>Структура</strong> — жодних звітів у корені; усе розкладено по теках за призначенням.</li>
+<li><strong>Тон</strong> — чесний, без прикрашання; припущення позначаються явно (через відсутність реальних даних DogTrain усі числа в RICE/метриках — це <strong>позначені оцінки</strong>, а не факти).</li>
+</ul>
+<blockquote>
+<p><strong>Примітка щодо інструментів.</strong> У глобальних інструкціях вказано використовувати MCP Serena та MCP sequential-thinking. У цьому середовищі ці MCP-сервери <strong>не підключені</strong>, тож структуроване міркування виконується вбудованими засобами, а навігація по коду — стандартними Read/Grep/Glob. Це не впливає на зміст артефактів, але чесно зазначаю розбіжність.</p>
+</blockquote>
+<h2 id="9">9. Поточний статус і наступний крок</h2>
+<table>
+<thead>
+<tr>
+<th>Фаза</th>
+<th>Статус</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0. Майстер-план</td>
+<td>✅ Готово</td>
+</tr>
+<tr>
+<td>1. Інфраструктура (Problem Discovery → Tasks + клікабельний MVP + sync-verify)</td>
+<td>✅ Готово</td>
+</tr>
+<tr>
+<td>2. Аналіз відтоку (Q1–Q3 + RICE)</td>
+<td>✅ Готово</td>
+</tr>
+<tr>
+<td>3. MVP-фіча <code>001-daily-focus</code> (forge + ТЗ + A/B-прототип)</td>
+<td>✅ Готово</td>
+</tr>
+<tr>
+<td>4. Валідація + HTML-хаб</td>
+<td>⏳ Наступний крок</td>
+</tr>
+<tr>
+<td>5. AI/персоналізація track (беклог 002–006)</td>
+<td>🗂 Згрумлено (backlog)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Гейт зараз:</strong> Фази 1–3 закриті; беклог AI згрумлено. Далі — <strong>Фаза 4</strong> (HTML-хаб <code>docs/index.html</code> + фінальна верифікація) або форджимо першу AI-фічу (<code>ai-personalization-context</code> → <code>003-ai-daily-tip</code>).</p>
+<div class="doc-foot">DogTrain · згенеровано з Markdown · 00-master-plan.md</div>
+</div>
+</body>
+</html>

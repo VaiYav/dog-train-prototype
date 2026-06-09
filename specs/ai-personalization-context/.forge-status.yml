@@ -1,0 +1,26 @@
+schema_version: 2
+feature: "ai-personalization-context"
+title: "PersonalizationContext — shared enabler for all AI features"
+created_at: "2026-06-09"
+feature_mode: "standard"
+feature_type: "shared_infrastructure"
+phases:
+  problem_discovery: completed   # reuse AI backlog §0 (shared layer thesis)
+  research: completed
+  product_spec: completed
+  revalidation: approved
+  bridge: completed
+  plan: completed
+  tasks: completed
+  implement: completed           # getPersonalizationContext() demonstrated in foundation prototype
+  verify: completed
+speckit_mode: "classic"
+consumed_by: ["003-ai-daily-tip", "002-ai-ask-rex", "004-ai-missions", "005-quick-log", "006-adaptive-plan"]
+depends_on: "000-core-infrastructure Consumer Contract (Dog, Completion, CareEvent, Plan, AnalyticsEvent)"
+gates:
+  - phase: implement
+    decision: "completed"
+    by: "orchestrator"
+    at: "2026-06-09"
+    note: "getPersonalizationContext() вбудовано в основний прототип; AI-порада (003) тепер читає контекст через нього."
+last_updated: "2026-06-09T00:00:00Z"

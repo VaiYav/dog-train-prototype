@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Матриця пересічень фіч → паралельна розробка</title>
+<style>
+  :root {
+    --ink:#1f2430; --muted:#5b6472; --line:#e7e3da; --bg:#fbfaf7; --card:#ffffff;
+    --amber:#e08a2b; --amber-soft:#fbe6cf; --teal:#1f8a8a; --teal-soft:#dff0ef;
+    --code:#f4f1ea; --ok:#2f8f4e; --warn:#c47d12; --crit:#c0392b;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  .wrap { max-width:880px; margin:0 auto; padding:40px 24px 80px; }
+  .topbar { background:linear-gradient(120deg,var(--amber),var(--teal)); height:6px; }
+  h1,h2,h3,h4 { line-height:1.25; color:var(--ink); }
+  h1 { font-size:2rem; margin:.2em 0 .5em; }
+  h2 { font-size:1.4rem; margin:1.9em 0 .6em; padding-bottom:.3em; border-bottom:2px solid var(--amber-soft); }
+  h3 { font-size:1.12rem; margin:1.5em 0 .4em; color:#2b3340; }
+  h4 { font-size:1rem; margin:1.2em 0 .3em; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  p,li { color:#2b3340; }
+  a { color:var(--teal); }
+  blockquote { margin:1.1em 0; padding:.6em 1.1em; background:var(--teal-soft);
+    border-left:4px solid var(--teal); border-radius:6px; color:#214b4b; }
+  blockquote p { margin:.3em 0; color:#214b4b; }
+  code { background:var(--code); padding:.12em .4em; border-radius:5px;
+    font:.86em "SF Mono",Menlo,Consolas,monospace; }
+  pre { background:#272b33; color:#e6e6e6; padding:16px 18px; border-radius:10px;
+    overflow:auto; font-size:.84rem; line-height:1.5; }
+  pre code { background:none; padding:0; color:inherit; }
+  table { border-collapse:collapse; width:100%; margin:1.2em 0; font-size:.93rem;
+    background:var(--card); border-radius:10px; overflow:hidden; box-shadow:0 1px 0 var(--line); }
+  th,td { text-align:left; padding:10px 13px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { background:var(--amber-soft); color:#6a4513; font-weight:650; }
+  tr:last-child td { border-bottom:none; }
+  td:first-child { font-weight:500; }
+  hr { border:none; border-top:1px solid var(--line); margin:2em 0; }
+  ul,ol { padding-left:1.3em; }
+  li { margin:.25em 0; }
+  .meta { color:var(--muted); font-size:.9rem; }
+  .doc-foot { margin-top:60px; padding-top:18px; border-top:1px solid var(--line);
+    color:var(--muted); font-size:.84rem; }
+  @media print { .topbar{display:none} body{background:#fff} .wrap{padding:0} }
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<div class="wrap">
+<h1 id="_1">Матриця пересічень фіч → паралельна розробка</h1>
+<blockquote>
+<p>Хто і що може робити <strong>одночасно</strong>, де <strong>залежності</strong>, а де треба <strong>координуватись</strong>. Декомпозиція задач — <a href="./01-execution-plan.md">01-execution-plan</a>.</p>
+</blockquote>
+<h2 id="_2">Легенда фіч</h2>
+<table>
+<thead>
+<tr>
+<th>Код</th>
+<th>Фіча</th>
+<th>Тип</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F0</strong></td>
+<td><code>000-core-infrastructure</code> (фундамент)</td>
+<td>база</td>
+</tr>
+<tr>
+<td><strong>DF</strong></td>
+<td><code>001-daily-focus</code> (нагадування+стрік)</td>
+<td><strong>не-AI</strong> · MVP</td>
+</tr>
+<tr>
+<td><strong>EN</strong></td>
+<td><code>ai-personalization-context</code> (enabler)</td>
+<td>не-LLM шар</td>
+</tr>
+<tr>
+<td><strong>TIP</strong></td>
+<td><code>003-ai-daily-tip</code></td>
+<td>AI</td>
+</tr>
+<tr>
+<td><strong>ADP</strong></td>
+<td><code>006-adaptive-plan</code></td>
+<td>AI (+rules)</td>
+</tr>
+<tr>
+<td><strong>MIS</strong></td>
+<td><code>004-ai-missions</code></td>
+<td>AI</td>
+</tr>
+<tr>
+<td><strong>ASK</strong></td>
+<td><code>002-ai-ask-rex</code></td>
+<td>AI</td>
+</tr>
+<tr>
+<td><strong>LOG</strong></td>
+<td><code>005-quick-log</code></td>
+<td>AI</td>
+</tr>
+<tr>
+<td><strong>TUR</strong></td>
+<td><code>007-product-tour</code></td>
+<td><strong>не-AI</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">Матриця пересічень (рядок ↔ колонка)</h2>
+<p><strong>⛓ = залежність (послідовно)</strong> · <strong>⚠ = спільна поверхня (паралельно, але координувати)</strong> · <strong>✅ = незалежні (вільно паралельно)</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: center;">F0</th>
+<th style="text-align: center;">DF</th>
+<th style="text-align: center;">EN</th>
+<th style="text-align: center;">TIP</th>
+<th style="text-align: center;">ADP</th>
+<th style="text-align: center;">MIS</th>
+<th style="text-align: center;">ASK</th>
+<th style="text-align: center;">LOG</th>
+<th style="text-align: center;">TUR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F0</strong></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">⛓</td>
+</tr>
+<tr>
+<td><strong>DF</strong></td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠</td>
+<td style="text-align: center;">⚠</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠</td>
+</tr>
+<tr>
+<td><strong>EN</strong></td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">✅</td>
+</tr>
+<tr>
+<td><strong>TIP</strong></td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">⚠</td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">⚠</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠</td>
+</tr>
+<tr>
+<td><strong>ADP</strong></td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">⚠</td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">⚠</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠</td>
+</tr>
+<tr>
+<td><strong>MIS</strong></td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠</td>
+</tr>
+<tr>
+<td><strong>ASK</strong></td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠</td>
+</tr>
+<tr>
+<td><strong>LOG</strong></td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✅</td>
+</tr>
+<tr>
+<td><strong>TUR</strong></td>
+<td style="text-align: center;">⛓</td>
+<td style="text-align: center;">⚠</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠</td>
+<td style="text-align: center;">⚠</td>
+<td style="text-align: center;">⚠</td>
+<td style="text-align: center;">⚠</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Як читати:</strong> два великі «блокери» — <strong>F0</strong> (блокує все) і <strong>EN</strong> (блокує всі AI). Кластер ⚠ навколо екрана «Сьогодні» — <strong>DF·TIP·ADP·TUR</strong> (ділять одну поверхню). Решта — ✅ (вільно паралельно).</p>
+<h2 id="_4">Хвилі паралельності (що будуємо одночасно)</h2>
+<pre><code>Wave 0 ──► F0  (фундамент: Today-поверхня, події, сутності, getVariant, rules-engine)
+              │  блокує все
+              ▼
+Wave 1 ──► DF ‖ EN ‖ TUR        ← одночасно, різними руками
+              │   (DF↔TUR координують елементи «Сьогодні»)
+              ▼  EN розблоковує AI
+Wave 2 ──► TIP ‖ ADP ‖ MIS ‖ ASK ‖ LOG   ← усі 5 паралельно
+              (TIP·ADP координують «Сьогодні»; усі читають EN read-only)
+</code></pre>
+<ul>
+<li><strong>Wave 1</strong> = наші <strong>2 тижні</strong>: MVP <code>DF</code> (Dev A+B) + у фоні <code>EN</code> (інші руки) + <code>TUR</code> (не-AI, дизайнер+Dev).</li>
+<li><strong>Wave 2</strong> = AI-фічі стартують <strong>після EN</strong>, паралельно між собою (тонкі обгортки).</li>
+</ul>
+<h2 id="ownership">Хто що веде (ownership × фіча)</h2>
+<table>
+<thead>
+<tr>
+<th>Фіча</th>
+<th style="text-align: center;">Dev A (frontend/loop)</th>
+<th style="text-align: center;">Dev B (data/notif/AI)</th>
+<th style="text-align: center;">Designer PT</th>
+<th style="text-align: center;">Analyst PT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DF (MVP)</td>
+<td style="text-align: center;">стрік/UI/стани</td>
+<td style="text-align: center;">нагадування/події/A-B</td>
+<td style="text-align: center;">макети/копі</td>
+<td style="text-align: center;">A/B+дашборд</td>
+</tr>
+<tr>
+<td>EN</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;"><strong>збирач контексту</strong></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">схема даних</td>
+</tr>
+<tr>
+<td>TIP</td>
+<td style="text-align: center;">картка UI</td>
+<td style="text-align: center;">prompt/LLM/кеш</td>
+<td style="text-align: center;">тон/копі</td>
+<td style="text-align: center;">A/B</td>
+</tr>
+<tr>
+<td>ADP</td>
+<td style="text-align: center;">прев'ю UI</td>
+<td style="text-align: center;">LLM-пропозиція + <strong>rules-валідатор</strong></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">A/B+guardrail</td>
+</tr>
+<tr>
+<td>MIS</td>
+<td style="text-align: center;">картка (Progress)</td>
+<td style="text-align: center;">генерація під ctx</td>
+<td style="text-align: center;">формат місій</td>
+<td style="text-align: center;">A/B</td>
+</tr>
+<tr>
+<td>ASK</td>
+<td style="text-align: center;">чат-UI</td>
+<td style="text-align: center;">prompt+<strong>safety-фільтр</strong></td>
+<td style="text-align: center;">копі/дисклеймер</td>
+<td style="text-align: center;">A/B+guardrail</td>
+</tr>
+<tr>
+<td>LOG</td>
+<td style="text-align: center;">поле (Care)</td>
+<td style="text-align: center;"><strong>parse</strong>+підтвердження</td>
+<td style="text-align: center;">флоу підтвердження</td>
+<td style="text-align: center;">точність парсингу</td>
+</tr>
+<tr>
+<td>TUR</td>
+<td style="text-align: center;">coach-marks UI</td>
+<td style="text-align: center;">події/флаг</td>
+<td style="text-align: center;">кроки/копі/a11y</td>
+<td style="text-align: center;">A/B (activation)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">Точки координації (де фічі «перетинаються»)</h2>
+<table>
+<thead>
+<tr>
+<th>Спільне</th>
+<th>Хто торкається</th>
+<th>Правило, щоб не зіткнутись</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Екран <strong>«Сьогодні»</strong></td>
+<td>DF, TIP, ADP, TUR</td>
+<td>один <strong>порядок слотів</strong> (стрік → порада → завдання → адаптив-прев'ю); власник layout — <strong>Dev A</strong></td>
+</tr>
+<tr>
+<td><strong>Подієва схема</strong></td>
+<td>усі</td>
+<td>єдина версіонована схема + тег <code>variant</code>; власник — <strong>Dev B + Analyst</strong></td>
+</tr>
+<tr>
+<td><strong>Feature flags</strong> (<code>getVariant</code>)</td>
+<td>усі A/B</td>
+<td>один реєстр флагів; один експеримент = один флаг</td>
+</tr>
+<tr>
+<td><strong>PersonalizationContext</strong></td>
+<td>усі AI</td>
+<td>стабільний контракт EN; AI читають <strong>read-only</strong></td>
+</tr>
+<tr>
+<td><strong>rules-engine</strong></td>
+<td>F0, ADP</td>
+<td>ADP лише <strong>пропонує</strong>, валідатор F0 — остання інстанція</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bottom-line-2">Bottom line (для 2 розробників)</h2>
+<ul>
+<li><strong>Зараз (2 тижні):</strong> Dev A веде петлю/стрік, Dev B — нагадування+аналітику; паралельно (якщо є люди) — EN у фоні. Це і є валідація однієї гіпотези без повного функціоналу.</li>
+<li><strong>Далі:</strong> як тільки EN готовий — 5 AI-фіч розпаралелюються; TUR (не-AI) можна вставити будь-коли. Жодна AI-фіча не починається до EN — інакше дублюємо збір даних і ловимо неузгодженість.</li>
+</ul>
+<div class="doc-foot">DogTrain · згенеровано з Markdown · 02-feature-matrix.md</div>
+</div>
+</body>
+</html>

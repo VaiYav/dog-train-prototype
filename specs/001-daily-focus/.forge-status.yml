@@ -1,0 +1,44 @@
+schema_version: 2
+feature: "001-daily-focus"
+title: "Daily Focus loop — retention MVP (anti-churn)"
+created_at: "2026-06-09"
+feature_mode: "standard"
+phases:
+  problem_discovery: completed
+  research: completed        # reused from Phase 2 churn analysis (docs/product/01-churn-analysis.md)
+  product_spec: completed    # folded into spec.md
+  revalidation: approved
+  bridge: completed
+  plan: completed
+  tasks: completed
+  pre_impl_review: skipped
+  implement: completed       # clickable A/B prototype
+  code_review: pending
+  verify: pending
+  test_plan: pending
+  test_run: pending
+  release_readiness: pending
+  retrospective: pending
+speckit_mode: "classic"
+hypothesis: "H2 (smart daily reminders) + minimal streak (H1) = Daily Focus loop"
+rice_score: 1275
+depends_on: "000-core-infrastructure (Consumer Contract: events, entities, Today surface, getVariant)"
+experiment:
+  primary_metric: "D2 retention (return + >=1 task completed)"
+  guardrails: ["notification opt-out / uninstall", "store rating", "onboarding completion / activation", "avg tasks per active user", "crash-free / Today load"]
+gates:
+  - phase: problem_discovery
+    decision: "go"
+    by: "Valentyn"
+    at: "2026-06-09"
+    note: "Обрано RICE-переможця (H2=1275); discovery/research = Фаза 2 churn analysis."
+  - phase: implement
+    decision: "completed"
+    by: "orchestrator"
+    at: "2026-06-09"
+    note: "Клікабельний A/B-прототип (control vs Daily Focus)."
+sync_runs:
+  last_run: ""
+  total_runs: 0
+  last_verdict: ""
+last_updated: "2026-06-09T00:00:00Z"

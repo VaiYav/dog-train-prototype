@@ -1,0 +1,16 @@
+schema_version: 2
+feature: "002-ai-ask-rex"
+title: "«Запитай про Рекса» — LLM Q&A grounded on dog data"
+created_at: "2026-06-09"
+feature_mode: "lite"
+phases: { problem_discovery: completed, research: completed, product_spec: completed, revalidation: approved, bridge: completed, plan: completed, tasks: completed, implement: completed, verify: completed }
+speckit_mode: "classic"
+hypothesis: "F1 — grounded Q&A about the dog → utility + trust → daily return"
+rice_lite: 210
+depends_on: "ai-personalization-context (enabler) + curated knowledge base"
+key_guardrail: "no medical diagnosis; ground on dog data; «не впевнений → до ветеринара»"
+gates:
+  - { phase: implement, decision: completed, by: orchestrator, at: "2026-06-09", note: "Чат-оверлей у прототипі; відповіді grounded на getPersonalizationContext(); медичний дисклеймер." }
+  - { phase: implement, decision: completed, by: orchestrator, at: "2026-06-09", note: "Якісне завершення: T001 curated KB + T002 safety-фільтр + T003 чат(+typing/latency/ℹ️-docs) + T004 getVariant('ask_rex') (control=без чату) + T006 guardrail-події (ai_qa_medical_redirect/feedback/answered). Раніше було лише демо T005 — дрейф tasks.md↔status узгоджено." }
+  - { phase: verify, decision: completed, by: orchestrator, at: "2026-06-09", note: "Адверсаріальна верифікація (6 рев'юерів). Пофікшено: safety-фільтр розширено (понос/рвота/кашель/задишка/опух/не їсть/схуд/паралі/дозування) — 24/24 кейси маршрутизації проходять емпіричний тест; AC1 weight у grounding; A/B live-variant у аналітику; WCAG AA (контраст бульбашки, tap-targets ≥44px, aria-label/role=dialog/фокус); подієва дока узгоджена. Прототип лишається file://-safe (1 classic script, 0 imports)." }
+last_updated: "2026-06-09T00:00:00Z"

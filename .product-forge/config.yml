@@ -1,0 +1,67 @@
+# Product Forge configuration — DogTrain
+version: "1.5.0"
+
+project_name: "DogTrain"
+project_domain: "Pet care — dog health, activity & training mobile app"
+project_tech_stack: "Test-case build target: clickable HTML prototypes, mobile-first (semantic HTML + CSS + vanilla JS, phone-frame ~390px, localStorage state, simulated trackEvent analytics). Production (future): RN/Flutter + REST backend + PostHog."
+
+# Modes: lite | standard | v-model
+default_feature_mode: "standard"
+default_speckit_mode: "standard"
+
+features_dir: "specs"
+codebase_path: "."
+
+locales:
+  - uk
+  - en
+
+progressive_verify_interval: 5
+
+# Feature registry (Product Forge feature folders under specs/)
+features:
+  - slug: "000-core-infrastructure"
+    title: "Minimal infrastructure (base DogTrain product)"
+    mode: "standard"
+    phase: "problem_discovery"
+  - slug: "001-daily-focus"
+    title: "Retention MVP — Daily Focus loop (anti-churn)"
+    mode: "standard"
+    phase: "implement"
+  # --- AI/LLM personalization track (groomed backlog, see docs/product/02-ai-ideas-backlog.md) ---
+  - slug: "ai-personalization-context"
+    title: "Shared enabler — PersonalizationContext (profile+history+care+plan+events → LLM context)"
+    mode: "standard"
+    phase: "implement"   # forged + getPersonalizationContext() demonstrated in foundation prototype
+    note: "Shared substrate for all AI features (002-006); consumed by 003 in prototype"
+  - slug: "002-ai-ask-rex"
+    title: "AI Q&A — «Запитай про Рекса» (personalized on dog data + history)"
+    mode: "lite"
+    phase: "implement"   # forged + chat demo in foundation prototype (consumes enabler)
+    rice_lite: 210
+  - slug: "003-ai-daily-tip"
+    title: "AI «порада дня» (personalized on breed/age/goal + progress)"
+    mode: "lite"
+    phase: "implement"   # forged (lite) + integrated into foundation prototype (simulated LLM)
+    rice_lite: 731
+  - slug: "004-ai-missions"
+    title: "AI челенджі/місії (personalized on mastered skills + goal)"
+    mode: "lite"
+    phase: "implement"   # forged + mission card demo in foundation prototype (Progress tab)
+    rice_lite: 540
+  - slug: "005-quick-log"
+    title: "Швидкий лог дня — text/voice → care events (LLM parse to our entities)"
+    mode: "lite"
+    phase: "implement"   # forged + quick-log demo in foundation prototype (Care tab)
+    rice_lite: 147
+  - slug: "006-adaptive-plan"
+    title: "LLM-адаптація плану (personalized on done/skipped; rules-validated)"
+    mode: "lite"
+    phase: "implement"   # forged (lite) + adaptive preview in foundation prototype (consumes enabler)
+    rice_lite: 550
+  # --- non-AI in-app guidance ---
+  - slug: "007-product-tour"
+    title: "Product Tour — guided walkthrough / coach marks (NON-AI, deterministic)"
+    mode: "lite"
+    phase: "verify"      # implemented as <dt-product-tour> in /prototype; verified (Playwright)
+    ai_llm: false

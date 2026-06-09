@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DogTrain — Логіка рішень (коротко)</title>
+<style>
+  :root {
+    --ink:#1f2430; --muted:#5b6472; --line:#e7e3da; --bg:#fbfaf7; --card:#ffffff;
+    --amber:#e08a2b; --amber-soft:#fbe6cf; --teal:#1f8a8a; --teal-soft:#dff0ef;
+    --code:#f4f1ea; --ok:#2f8f4e; --warn:#c47d12; --crit:#c0392b;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  .wrap { max-width:880px; margin:0 auto; padding:40px 24px 80px; }
+  .topbar { background:linear-gradient(120deg,var(--amber),var(--teal)); height:6px; }
+  h1,h2,h3,h4 { line-height:1.25; color:var(--ink); }
+  h1 { font-size:2rem; margin:.2em 0 .5em; }
+  h2 { font-size:1.4rem; margin:1.9em 0 .6em; padding-bottom:.3em; border-bottom:2px solid var(--amber-soft); }
+  h3 { font-size:1.12rem; margin:1.5em 0 .4em; color:#2b3340; }
+  h4 { font-size:1rem; margin:1.2em 0 .3em; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  p,li { color:#2b3340; }
+  a { color:var(--teal); }
+  blockquote { margin:1.1em 0; padding:.6em 1.1em; background:var(--teal-soft);
+    border-left:4px solid var(--teal); border-radius:6px; color:#214b4b; }
+  blockquote p { margin:.3em 0; color:#214b4b; }
+  code { background:var(--code); padding:.12em .4em; border-radius:5px;
+    font:.86em "SF Mono",Menlo,Consolas,monospace; }
+  pre { background:#272b33; color:#e6e6e6; padding:16px 18px; border-radius:10px;
+    overflow:auto; font-size:.84rem; line-height:1.5; }
+  pre code { background:none; padding:0; color:inherit; }
+  table { border-collapse:collapse; width:100%; margin:1.2em 0; font-size:.93rem;
+    background:var(--card); border-radius:10px; overflow:hidden; box-shadow:0 1px 0 var(--line); }
+  th,td { text-align:left; padding:10px 13px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { background:var(--amber-soft); color:#6a4513; font-weight:650; }
+  tr:last-child td { border-bottom:none; }
+  td:first-child { font-weight:500; }
+  hr { border:none; border-top:1px solid var(--line); margin:2em 0; }
+  ul,ol { padding-left:1.3em; }
+  li { margin:.25em 0; }
+  .meta { color:var(--muted); font-size:.9rem; }
+  .doc-foot { margin-top:60px; padding-top:18px; border-top:1px solid var(--line);
+    color:var(--muted); font-size:.84rem; }
+  @media print { .topbar{display:none} body{background:#fff} .wrap{padding:0} }
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<div class="wrap">
+<h1 id="dogtrain">DogTrain — Логіка рішень (коротко)</h1>
+<blockquote>
+<p>Коротке пояснення: яку логіку використали при формуванні гіпотез, чому обрали саме ці фічі та пріоритети, і як очікуємо вплив на поведінку.
+Деталі: <a href="01-churn-analysis.md">аналіз відтоку + RICE</a> · <a href="02-ai-ideas-backlog.md">AI-беклог</a> · <a href="../00-master-plan.md">майстер-план</a>.</p>
+</blockquote>
+<h2 id="1">1. Логіка формування гіпотез</h2>
+<p><strong>Йшли від діагнозу, а не від ідей.</strong> Спершу — аналіз відтоку: корінь проблеми не «бракує функцій», а <strong>активація / рання утримуваність</strong>. Конкретні механізми, які ламаються:
+- немає <strong>тригера повернення</strong> (низький opt-in пушів, мало хто відкриває на Day 2);
+- немає <strong>винагороди</strong> за повернення (Day 2 — «день рішення»);
+- <strong>перевантаження</strong> тижневим планом; задовгий шлях до першої цінності.</p>
+<p>Спирались на <strong>реальні бенчмарки</strong> (77% кидають за 3 дні; Day 2 = commitment) і <strong>JTBD</strong>, а не на здогади.</p>
+<p>Далі — три правила формування гіпотез:
+1. <strong>Кожна гіпотеза цілить у конкретний механізм відтоку</strong> (тригер / винагорода / перевантаження / time-to-value / сприйнята цінність).
+2. <strong>Фільтр здійсненності:</strong> для 2-тижневого MVP — без кастомного AI/ML; усе має будуватись наявною командою.
+3. <strong>Кожна — вимірювана й A/B-валідовна</strong> на подіях, які <strong>вже шле фундамент</strong> (<code>first_win</code>, <code>app_opened</code>, <code>task_completed</code>…). Формат: «фіча → який механізм лікує → як перевіряємо (A/B + метрика)».</p>
+<h2 id="2">2. Чому обрали саме ці фічі та пріоритети</h2>
+<p><strong>Пріоритизація об'єктивна — RICE / RICE-lite</strong> (Reach × Impact × Confidence / Effort) з <strong>явно позначеними припущеннями</strong> (бо реальних даних DogTrain немає — головне порядок, не точна цифра).</p>
+<ul>
+<li><strong>Retention-MVP = H2 «розумні щоденні нагадування»</strong> (топ RICE 1275): найдешевший важіль із найвищим reach, що діє рівно в точці D2-обриву. Упакували з <strong>мінімальним стріком</strong> у <strong>«Daily Focus loop»</strong> — щоб замкнути петлю <strong>тригер → дія → винагорода</strong>. Свідомо <strong>детерміновано (без AI)</strong>, щоб вкластися у 2 тижні.</li>
+<li><strong>AI-трек — enabler-first:</strong> спільний <code>PersonalizationContext</code> ↓ effort кожної фічі й ↑ Confidence (єдине джерело → ↓ галюцинації). Далі за RICE-lite: <strong>порада дня (731) → адаптація плану (550) → місії (540) → Q&amp;A (210) → швидкий лог (147)</strong>.</li>
+<li><strong>Product tour</strong> — окремий <strong>не-AI</strong> важіль (feature discovery) для активації/розуміння цінності.</li>
+</ul>
+<blockquote>
+<p>Принцип вибору: брати важелі, що б'ють у <strong>діагностований корінь</strong> за <strong>найменшого effort</strong>, і валідувати найдешевший спершу.</p>
+</blockquote>
+<h2 id="3">3. Як очікуємо вплив на поведінку</h2>
+<table>
+<thead>
+<tr>
+<th>Важіль / фіча</th>
+<th>Механізм поведінки</th>
+<th>Очікуваний рух метрики</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Фундамент (швидкий онбординг → перша перемога)</td>
+<td>користувач робить дію в перші &lt;2 хв</td>
+<td>↑ Activation (перша перемога D0)</td>
+</tr>
+<tr>
+<td><strong>Daily Focus: нагадування</strong></td>
+<td>повертає привід відкрити на Day 2–3</td>
+<td>↑ <strong>D2 retention</strong> (повернення + дія)</td>
+</tr>
+<tr>
+<td><strong>Daily Focus: стрік</strong></td>
+<td>винагорода за повернення → не хочеться втрачати серію</td>
+<td>↑ днів поспіль → ↑ D7; ↑ completion 1-го тижня</td>
+</tr>
+<tr>
+<td>Денний фокус (3 завдання, не стіна тижня)</td>
+<td>менше перевантаження</td>
+<td>↑ виконаних завдань/день</td>
+</tr>
+<tr>
+<td>AI порада дня / місії / адаптація</td>
+<td>свіжий персональний контент + релевантність</td>
+<td>↑ щоденні відкриття, ↑ completion</td>
+</tr>
+<tr>
+<td>Запитай про Рекса</td>
+<td>утиліта + довіра</td>
+<td>↑ відкриття, ↑ утримання</td>
+</tr>
+<tr>
+<td>Швидкий лог</td>
+<td>менше тертя в логуванні</td>
+<td>↑ залученість логування</td>
+</tr>
+<tr>
+<td>Product tour (не-AI)</td>
+<td>швидше розуміння цінності</td>
+<td>↑ активація/adoption (guardrail — TTV не гірше)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Загальна очікувана динаміка</strong> — зрушення воронки: Activation → D1 → <strong>D2 (фокус)</strong> → D7 → completion 1-го тижня → LTV.</p>
+<blockquote>
+<p><strong>Як страхуємось:</strong> усе вмикається <strong>за фіче-флагом і A/B перед розкаткою</strong>; на кожну фічу — <strong>guardrail-метрики</strong> (opt-out/uninstall, TTV, рейтинг, сер. завдань на активного), щоб не «накрутити» утримання на шкоду досвіду (constitution: humane engagement). Усі числа — <strong>позначені оцінки</strong> до збору реальних даних.</p>
+</blockquote>
+<div class="doc-foot">DogTrain · згенеровано з Markdown · 03-rationale.md</div>
+</div>
+</body>
+</html>

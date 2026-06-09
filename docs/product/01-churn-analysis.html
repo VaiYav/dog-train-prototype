@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DogTrain — Аналіз відтоку та пріоритизація (Фаза 2)</title>
+<style>
+  :root {
+    --ink:#1f2430; --muted:#5b6472; --line:#e7e3da; --bg:#fbfaf7; --card:#ffffff;
+    --amber:#e08a2b; --amber-soft:#fbe6cf; --teal:#1f8a8a; --teal-soft:#dff0ef;
+    --code:#f4f1ea; --ok:#2f8f4e; --warn:#c47d12; --crit:#c0392b;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  .wrap { max-width:880px; margin:0 auto; padding:40px 24px 80px; }
+  .topbar { background:linear-gradient(120deg,var(--amber),var(--teal)); height:6px; }
+  h1,h2,h3,h4 { line-height:1.25; color:var(--ink); }
+  h1 { font-size:2rem; margin:.2em 0 .5em; }
+  h2 { font-size:1.4rem; margin:1.9em 0 .6em; padding-bottom:.3em; border-bottom:2px solid var(--amber-soft); }
+  h3 { font-size:1.12rem; margin:1.5em 0 .4em; color:#2b3340; }
+  h4 { font-size:1rem; margin:1.2em 0 .3em; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  p,li { color:#2b3340; }
+  a { color:var(--teal); }
+  blockquote { margin:1.1em 0; padding:.6em 1.1em; background:var(--teal-soft);
+    border-left:4px solid var(--teal); border-radius:6px; color:#214b4b; }
+  blockquote p { margin:.3em 0; color:#214b4b; }
+  code { background:var(--code); padding:.12em .4em; border-radius:5px;
+    font:.86em "SF Mono",Menlo,Consolas,monospace; }
+  pre { background:#272b33; color:#e6e6e6; padding:16px 18px; border-radius:10px;
+    overflow:auto; font-size:.84rem; line-height:1.5; }
+  pre code { background:none; padding:0; color:inherit; }
+  table { border-collapse:collapse; width:100%; margin:1.2em 0; font-size:.93rem;
+    background:var(--card); border-radius:10px; overflow:hidden; box-shadow:0 1px 0 var(--line); }
+  th,td { text-align:left; padding:10px 13px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { background:var(--amber-soft); color:#6a4513; font-weight:650; }
+  tr:last-child td { border-bottom:none; }
+  td:first-child { font-weight:500; }
+  hr { border:none; border-top:1px solid var(--line); margin:2em 0; }
+  ul,ol { padding-left:1.3em; }
+  li { margin:.25em 0; }
+  .meta { color:var(--muted); font-size:.9rem; }
+  .doc-foot { margin-top:60px; padding-top:18px; border-top:1px solid var(--line);
+    color:var(--muted); font-size:.84rem; }
+  @media print { .topbar{display:none} body{background:#fff} .wrap{padding:0} }
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<div class="wrap">
+<h1 id="dogtrain-2">DogTrain — Аналіз відтоку та пріоритизація (Фаза 2)</h1>
+<blockquote>
+<p><strong>Тест-кейс, частина 1: аналіз проблеми відтоку.</strong> Відповіді на Q1–Q3.
+Проблема: <strong>&gt;80% нових користувачів припиняють активно користуватись на 2–3 день</strong>, не завершивши перший тижневий план.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Документ</td>
+<td>Аналіз відтоку + 5 гіпотез + RICE</td>
+</tr>
+<tr>
+<td>Дата</td>
+<td>2026-06-09</td>
+</tr>
+<tr>
+<td>Джерело подій</td>
+<td>Схема <code>trackEvent</code> фундаменту (<a href="../../specs/000-core-infrastructure/spec.md">Consumer Contract</a>) + PostHog (funnels/retention/experiments)</td>
+</tr>
+<tr>
+<td>Бенчмарки</td>
+<td>Реальні галузеві дані з <a href="../../specs/000-core-infrastructure/research/metrics-roi.md">research</a></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Чесна засторога.</strong> Реальних даних DogTrain у мене немає, тож усі <strong>числа (RICE, проценти, baseline) — позначені оцінки</strong> на базі галузевих бенчмарків і логіки. Фундамент (Фаза 1) уже інструментує потрібні події — щойно зберемо реальні когорти, цифри перерахуються фактично. Метод важливіший за конкретне число.</p>
+</blockquote>
+<h2 id="0">0. Контекст і метод</h2>
+<p><strong>Діагноз (з Problem Discovery + Research):</strong> це проблема <strong>активації та ранньої утримуваності</strong>, а не залучення. Користувачі доходять до цінності (план), але не закріплюють звичку. Галузь підтверджує: <strong>77% DAU кидають апку за перші 3 дні</strong>, а <strong>Day 2 — «день рішення» (commitment)</strong>. Тобто DogTrain у нормі галузі, але саме D2 — точка, де треба втрутитись.</p>
+<p><strong>Когорти для порівняння:</strong>
+- <strong>Retained</strong> — повернулись на Day 2+ і виконали ≥1 завдання (а в ідеалі — дійшли до кінця 1-го тижня).
+- <strong>Churned</strong> — остання активність на 2–3 день, перший тижневий план не завершено.</p>
+<p><strong>Як рахуємо різницю:</strong> будуємо у PostHog (а) воронку активації D0, (б) когортну retention-матрицю, (в) для кожної події з Q1 рахуємо <strong>lift</strong>: наскільки наявність події корелює з D7-retention. Події з найбільшою розбіжністю retained vs churned = найвищі важелі для фіч (Q2).</p>
+<hr />
+<h2 id="q1-day-1-day-2">Q1. Які продуктові івенти Day 1 / Day 2 порівнюємо між когортами</h2>
+<p>Нижче — конкретні події (усі <strong>вже емітяться фундаментом</strong>), згруповані за днями. Для кожної — очікуваний напрям (retained &gt; churned) і <strong>чому вона діагностична</strong>.</p>
+<h3 id="day-1">Day 1 — сигнали активації</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Подія</th>
+<th>Що міряє</th>
+<th>Очікувано (retained vs churned)</th>
+<th>Чому діагностична</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong><code>first_win</code></strong> (перший <code>task_completed</code> у D0)</td>
+<td>Чи відмітив ≥1 завдання першого дня</td>
+<td>retained ≫ churned</td>
+<td>«Перша перемога» — <strong>найсильніший предиктор</strong> утримання; пасивний глядач ≠ активний учасник</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong><code>onboarding_completed</code> / <code>plan_generated</code></strong></td>
+<td>Чи дійшов до кінця 8 кроків і отримав план</td>
+<td>retained &gt; churned</td>
+<td>Прямо показує drop-off у довгому (8 кроків) онбордингу</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong><code>notification_permission{granted:true}</code></strong></td>
+<td>Чи увімкнув нагадування</td>
+<td>retained ≫ churned</td>
+<td>Без дозволу немає тригера повернення → вищий ризик не повернутись на D2</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong><code>tasks_completed_d0</code></strong> (0/1/2/3)</td>
+<td>Глибина залучення першого дня</td>
+<td>retained має 2–3, churned 0–1</td>
+<td>Відрізняє «спробував» від «зробив»; <code>day_completed</code> (3/3) — сильний сигнал</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>TTV</strong> (<code>onboarding_started</code>→<code>first_win</code>)</td>
+<td>Час до першої цінності</td>
+<td>retained коротший</td>
+<td>Довгий TTV корелює з відтоком; зв'язок із 8 кроками</td>
+</tr>
+</tbody>
+</table>
+<h3 id="day-2-commitment">Day 2 — сигнали повернення/commitment</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Подія</th>
+<th>Що міряє</th>
+<th>Очікувано</th>
+<th>Чому діагностична</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6</td>
+<td><strong><code>app_opened{day_since_install=2}</code></strong></td>
+<td>Чи повернувся взагалі на D2</td>
+<td>retained = 100%, churned ≈ 0</td>
+<td>Це і є бінарний D1-retention — головна точка обриву</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong><code>task_completed{day_index≥1}</code></strong></td>
+<td>Чи зробив ≥1 завдання на D2</td>
+<td>retained ≫ churned</td>
+<td>Повернутись і <strong>зробити</strong> — справжній commitment, а не просто відкрити</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong><code>notification_opened</code></strong> (D2, якщо пуш увімкнено)</td>
+<td>Чи спрацював тригер повернення</td>
+<td>retained &gt; churned</td>
+<td>Перевіряє, чи <strong>нагадування реально повертає</strong> (гіпотеза H2)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Мінімум 3 ключові, на яких я б сфокусувався:</strong> <strong><code>first_win</code> (D0)</strong>, <strong><code>notification_permission</code> (D0)</strong> і <strong><code>app_opened</code> D2 → <code>task_completed</code> D2</strong>. Гіпотеза: найбільший розрив retained/churned буде саме тут — мало хто з churned зробив першу перемогу, увімкнув нагадування й мав тригер повернутись на D2. Це напряму веде до гіпотез Q2.</p>
+<hr />
+<h2 id="q2">Q2. П'ять гіпотез проти відтоку</h2>
+<p>Формат кожної: <strong>гіпотеза → чому вирішує проблему → як перевіряємо</strong>. Усі — <strong>без кастомного AI/ML</strong> (обмеження). Фундамент уже дає поверхню «Сьогодні», події й A/B-хук, тож усе валідовне A/B-тестом.</p>
+<blockquote>
+<p>Що вже є у фундаменті (Фаза 1) і <strong>не</strong> є окремою гіпотезою: денний фокус «Сьогодні» (3 завдання замість стіни тижня), нагадування <strong>догляду</strong> (щеплення/вет/грумінг), trial. Гіпотези нижче — <strong>додаткові важелі</strong> поверх цього.</p>
+</blockquote>
+<h3 id="h1-engagement-">H1 — Стрік + видимий прогрес (engagement-петля)</h3>
+<ul>
+<li><strong>Що:</strong> лічильник 🔥 «днів поспіль» + винагорода за повернення (бейдж/мікросвято), loss-aversion.</li>
+<li><strong>Чому вирішує:</strong> Day 2 = «день рішення» — повернення треба <strong>винагородити</strong>. Стрік дає причину повертатись щодня (Duolingo, Headspace). Б'є прямо в D2-обрив.</li>
+<li><strong>Як перевіряємо:</strong> A/B «стрік-UI vs без стріку» на нових користувачах. Primary — <strong>D2/D7 retention</strong>; secondary — днів поспіль із ≥1 виконаним завданням.</li>
+</ul>
+<h3 id="h2-return-">H2 — Розумні щоденні нагадування (return-тригер) ⭐</h3>
+<ul>
+<li><strong>Що:</strong> щоденне локальне/пуш-нагадування під план («Час прогулянки з Рексом 🐶») у зручний час; контекстний opt-in після першої перемоги.</li>
+<li><strong>Чому вирішує:</strong> <strong>№1 важіль утримання</strong> — цінний тригер, прив'язаний до рутини. Churned-когорта не повертається, бо <strong>немає тригера</strong>. Нагадування створює привід відкрити апку на D2/D3 саме тоді, коли гине 80%.</li>
+<li><strong>Як перевіряємо:</strong> A/B «нагадування ON vs holdout». Primary — <strong>D2/D3 retention</strong>; вимірюємо <code>notification_opened → session → task_completed</code>; guardrail — opt-out/uninstall.</li>
+</ul>
+<h3 id="h3-7-">H3 — «7-денний стартовий челендж» із фінішною винагородою</h3>
+<ul>
+<li><strong>Що:</strong> перший тиждень оформлений як челендж із чітким фінішем і нагородою (розблокування/бейдж «Перший тиждень»).</li>
+<li><strong>Чому вирішує:</strong> проблема дослівно — «<strong>не завершили перший тижневий план</strong>». Ціль + винагорода підвищують завершення тижня (ефект мети, прогрес-бар).</li>
+<li><strong>Як перевіряємо:</strong> A/B «челендж-обгортка vs звичайний план». Primary — <strong>completion 1-го тижня</strong> + D7; secondary — частка, що дійшла до Day 7-завдання.</li>
+</ul>
+<h3 id="h4-ttv">H4 — Швидший онбординг / прогресивний профайлинг (активація/TTV)</h3>
+<ul>
+<li><strong>Що:</strong> скоротити шлях до першої перемоги: 8 кроків → 3–4 ключові до плану, решту запитати <strong>після</strong> активації (прогресивно).</li>
+<li><strong>Чому вирішує:</strong> 8 кроків — вище за бенчмарк 3–5; per-step drop-off (ми самі це позначили як ризик) ріже активацію; коротший TTV → вища активація → вище утримання.</li>
+<li><strong>Як перевіряємо:</strong> A/B «8 кроків vs 4 кроки + дозбір пізніше». Primary — <strong>onboarding completion + activation (<code>first_win</code> D0)</strong> → D2.</li>
+</ul>
+<h3 id="h5-">H5 — Контекстне «чому це важливо» + міні-поради під породу/вік</h3>
+<ul>
+<li><strong>Що:</strong> до кожного завдання — 1 рядок цінності + іноді міні-порада під сегмент (без AI, з куратованих шаблонів).</li>
+<li><strong>Чому вирішує:</strong> користувач не робить того, у чому не бачить сенсу; пояснення підвищує сприйняту цінність і довіру → виконання завдань → повернення.</li>
+<li><strong>Як перевіряємо:</strong> A/B «з міні-контентом vs без». Primary — <strong>task completion rate</strong> + D2; secondary — час на екрані завдання.</li>
+</ul>
+<hr />
+<h2 id="q3-rice-confidence">Q3. Пріоритизація RICE + обґрунтування Confidence</h2>
+<p><strong>Метод RICE:</strong> <code>RICE = (Reach × Impact × Confidence) / Effort</code>.
+<strong>Припущення (позначені):</strong> ~2 000 нових інсталів/міс; ~75% доходять до екрана «Сьогодні» → Reach ≈ 1 500/міс для post-onboarding-фіч, 2 000 для самого онбордингу. Impact: 3=масивний, 2=високий, 1.5=помітний, 1=середній. Confidence: 100/85/80/70/55%. Effort — у людино-тижнях для команди (2 розробники + 0.5 дизайнер + 0.5 аналітик), вікно 2 тижні.</p>
+<table>
+<thead>
+<tr>
+<th>Гіпотеза</th>
+<th>Reach (/міс)</th>
+<th>Impact</th>
+<th>Confidence</th>
+<th>Effort (л-тиж)</th>
+<th><strong>RICE</strong></th>
+<th>Ранг</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>H2 Розумні щоденні нагадування</strong></td>
+<td>1500</td>
+<td>2.0</td>
+<td>85%</td>
+<td>2.0</td>
+<td><strong>1275</strong></td>
+<td>🥇 1</td>
+</tr>
+<tr>
+<td>H4 Швидший онбординг</td>
+<td>2000</td>
+<td>1.5</td>
+<td>70%</td>
+<td>2.5</td>
+<td>840</td>
+<td>2</td>
+</tr>
+<tr>
+<td>H1 Стрік + прогрес</td>
+<td>1500</td>
+<td>2.0</td>
+<td>80%</td>
+<td>3.0</td>
+<td>800</td>
+<td>3</td>
+</tr>
+<tr>
+<td>H3 7-денний челендж</td>
+<td>1500</td>
+<td>1.5</td>
+<td>70%</td>
+<td>3.0</td>
+<td>525</td>
+<td>4</td>
+</tr>
+<tr>
+<td>H5 «Чому це важливо»</td>
+<td>1500</td>
+<td>1.0</td>
+<td>55%</td>
+<td>3.0</td>
+<td>275</td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Розрахунок топа: 1500 × 2.0 × 0.85 / 2.0 = <strong>1275</strong>.</p>
+</blockquote>
+<h3 id="mvp">Переможець і пакування MVP</h3>
+<p><strong>Топ за RICE — H2 (розумні щоденні нагадування):</strong> найдешевший важіль із найвищим reach і найсильнішою доказовою базою. Це <strong>return-тригер</strong>, що діє рівно в точці D2-обриву.</p>
+<p><strong>Але</strong> тригер без винагороди недопрацьовує. Тому <strong>MVP-фічу збираю як «Daily Focus loop»</strong>: <strong>H2 (нагадування) як ядро + мінімальний стрік з H1 як винагорода за повернення.</strong> Чому це чесно й не «scoping creep»: поверхня «Сьогодні» і події вже є у фундаменті, тож стрік — <strong>майже нульовий маржинальний effort</strong> поверх нагадування. Петля стає повною: <strong>тригер (нагадування) → дія (завдання) → винагорода (стрік/прогрес)</strong>. Саме її форджимо у Фазі 3 як <code>001-daily-focus</code>. Основна гіпотеза під тестом — H2.</p>
+<h3 id="confidence-85-h2">Обґрунтування Confidence топ-фічі (85% для H2)</h3>
+<p>Чому <strong>високо (85%)</strong>:
+- <strong>Конвергентні зовнішні докази:</strong> нагадування/тригери стабільно називають <strong>№1 важелем</strong> утримання; «Day 2 = commitment — винагороджуй повернення»; «цінні (не порожні) пуші» працюють краще за open-driven. Це не одне джерело, а збіг кількох (<a href="../../specs/000-core-infrastructure/research/metrics-roi.md">research/metrics-roi</a>).
+- <strong>Прямо б'є в діагностований механізм:</strong> churned-когорта не повертається через <strong>відсутність тригера</strong> (Q1: низький <code>notification_permission</code>, немає <code>app_opened</code> D2). Нагадування діє саме там.
+- <strong>Низький ризик виконання:</strong> будується за 2 тижні наявною командою, <strong>без AI/ML</strong> → отримаємо чистий, швидкий A/B-рід.</p>
+<p>Чому <strong>не 100%</strong>:
+- <strong>Немає власних даних</strong> — корінь поки гіпотеза, не порахована на наших когортах (фундамент щойно почав їх збирати).
+- <strong>Невідома величина ефекту</strong> — напрям майже певний, магнітуда — ні.
+- <strong>Стеля reach через opt-in пушів</strong> (особливо iOS) — мітигуємо контекстним запитом після першої перемоги (вже у фундаменті).
+- <strong>Ризик «перенагадати»</strong> → роздратування/uninstall — тому обов'язковий <strong>guardrail</strong> на opt-out/uninstall.</p>
+<p><strong>Підсумок:</strong> 85% — достатньо високо, щоб поставити 2 тижні на цю фічу, але не настільки, щоб пропустити guardrails чи сам A/B.</p>
+<hr />
+<h2 id="3">Місток у Фазу 3</h2>
+<p>Переможець RICE → <strong><code>001-daily-focus</code></strong> (Daily Focus loop: щоденне нагадування + мінімальний стрік на поверхні «Сьогодні»). У Фазі 3 проганяємо його через Product Forge (problem-discovery → … → spec/plan/tasks) і робимо <strong>клікабельний прототип</strong> + ТЗ (user story, UX/UI, логіка, Primary/Guardrail метрики, acceptance, 2-тижневий To-Do команди).</p>
+<blockquote>
+<p>Зверни увагу на симетрію: події з Q1 (<code>first_win</code>, <code>notification_permission</code>, <code>app_opened</code> D2, <code>task_completed</code> D2) — це <strong>ті самі</strong>, що фундамент уже шле. Тобто аналіз відтоку й A/B retention-MVP стоять на одній подієвій схемі — нічого «дозбирувати».</p>
+</blockquote>
+<div class="doc-foot">DogTrain · згенеровано з Markdown · 01-churn-analysis.md</div>
+</div>
+</body>
+</html>

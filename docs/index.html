@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DogTrain — тест-кейс · хаб deliverables</title>
+<style>
+  :root{--amber:#e08a2b;--amber-d:#c6741b;--amber-soft:#fbe6cf;--teal:#1f8a8a;--teal-d:#176b6b;--teal-soft:#dff0ef;
+    --ink:#1f2430;--muted:#5b6472;--line:#e7e3da;--bg:#fbfaf7;--card:#fff;--ok:#2f8f4e;--shadow:0 10px 30px rgba(20,30,40,.08)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--teal-d);text-decoration:none}a:hover{text-decoration:underline}
+  .topbar{height:6px;background:linear-gradient(120deg,var(--amber),var(--teal))}
+  .wrap{max-width:1000px;margin:0 auto;padding:34px 22px 80px}
+  .hero{text-align:center;padding:18px 0 6px}
+  .hero .paw{font-size:3rem}
+  .hero h1{font-size:2.2rem;margin:.1em 0}
+  .hero p{color:var(--muted);max-width:640px;margin:.3em auto}
+  .badge{display:inline-flex;align-items:center;gap:7px;background:#e4f3e9;color:var(--ok);
+    border:1px solid #bfe3cd;border-radius:99px;padding:6px 14px;font-weight:700;font-size:.9rem;margin-top:10px}
+  h2.sec{font-size:1.15rem;margin:34px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--amber-soft)}
+  .grid{display:grid;gap:14px}
+  .g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:720px){.g2,.g3{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 16px;box-shadow:var(--shadow)}
+  .card h3{margin:.1em 0 .4em;font-size:1.05rem}
+  .card .lead{color:var(--muted);font-size:.92rem;margin:0 0 12px}
+  .links{display:flex;flex-wrap:wrap;gap:7px}
+  .pill{display:inline-block;background:var(--teal-soft);color:var(--teal-d);border-radius:8px;padding:5px 10px;font-size:.82rem;font-weight:600}
+  .pill.md{background:#eef1f4;color:#46505c}
+  .pill:hover{filter:brightness(.97);text-decoration:none}
+  /* prototype CTA */
+  .proto{display:flex;gap:16px;align-items:center;background:linear-gradient(120deg,#fff,#fff7ee);
+    border:1px solid var(--amber-soft);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+  .proto .emoji{font-size:2.4rem;flex:none}
+  .proto h3{margin:.1em 0}
+  .proto .go{margin-left:auto;background:var(--amber);color:#fff;border-radius:12px;padding:11px 16px;font-weight:700;white-space:nowrap}
+  .proto .go:hover{text-decoration:none;filter:brightness(.96)}
+  .map{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.map{grid-template-columns:1fr}}
+  .map .col{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+  .map h3{margin:.1em 0 .5em}
+  .map ul{margin:.3em 0;padding-left:1.1em}.map li{margin:.3em 0;font-size:.93rem}
+  .phase{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px}
+  .phase .n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--teal-soft);color:var(--teal-d);display:grid;place-items:center;font-weight:800;font-size:.85rem}
+  .phase .done{background:#e4f3e9;color:var(--ok)}
+  .phase .body{flex:1}
+  .phase h4{margin:0 0 6px;font-size:1rem}
+  .foot{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem;text-align:center}
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="paw">🐾</div>
+    <h1>DogTrain — тест-кейс</h1>
+    <p>Аналіз раннього відтоку та дизайн retention-MVP, проведені наскрізно через <b>Product Forge → Spec Kit</b>. Markdown — джерело правди, HTML — згенеровано, прототипи — клікабельні.</p>
+    <span class="badge">✅ Фінальна верифікація: PASS · усі deliverables на місці · лінки робочі</span>
+  </div>
+
+  <h2 class="sec">📦 Submission package (Genesis)</h2>
+  <div class="grid g3">
+    <div class="card"><h3>📨 Submission</h3><p class="lead">Нарратив «що/як/хто/retention» + покриття завдання + Loom-місце.</p><div class="links"><a class="pill" href="../delivery/README.html">Відкрити</a><a class="pill md" href="../delivery/README.md">.md</a></div></div>
+    <div class="card"><h3>🧩 Декомпозиція</h3><p class="lead">2-тижневий план по ролях × тижнях + WBS.</p><div class="links"><a class="pill" href="../delivery/01-execution-plan.html">Відкрити</a><a class="pill md" href="../delivery/01-execution-plan.md">.md</a></div></div>
+    <div class="card"><h3>🔀 Матриця паралелі</h3><p class="lead">Пересічення фіч + хто/що будує одночасно.</p><div class="links"><a class="pill" href="../delivery/02-feature-matrix.html">Відкрити</a><a class="pill md" href="../delivery/02-feature-matrix.md">.md</a></div></div>
+  </div>
+
+  <h2 class="sec">▶ Почни тут</h2>
+  <div class="grid g2">
+    <div class="card">
+      <h3>🗺 Майстер-план</h3>
+      <p class="lead">Орієнтир: що/навіщо/в якому порядку, карта артефактів, мапа «завдання → deliverable».</p>
+      <div class="links"><a class="pill" href="00-master-plan.html">Відкрити (HTML)</a><a class="pill md" href="00-master-plan.md">.md</a></div>
+    </div>
+    <div class="card">
+      <h3>✅ Звіт верифікації</h3>
+      <p class="lead">Покриття всіх вимог завдання, перевірки лінків/YAML/прототипів, чесні застереження.</p>
+      <div class="links"><a class="pill" href="verification-report.html">Відкрити (HTML)</a><a class="pill md" href="verification-report.md">.md</a></div>
+    </div>
+  </div>
+
+  <h2 class="sec">🖱 Клікабельні прототипи (mobile-first)</h2>
+  <div class="grid" style="gap:12px">
+    <a class="proto" href="../prototype/index.html">
+      <span class="emoji">🐶</span>
+      <div><h3>Фундамент MVP</h3><div class="lead" style="margin:0">8-кроковий онбординг → план → «Сьогодні» (3 завдання) → перша перемога → догляд → trial. + живий лог подій.</div></div>
+      <span class="go">Запустити →</span>
+    </a>
+    <a class="proto" href="../prototype/daily-focus.html">
+      <span class="emoji">🔥</span>
+      <div><h3>Daily Focus loop — A/B</h3><div class="lead" style="margin:0">Перемикач Control ↔ Daily Focus: стрік, щоденне нагадування, мікросвята, гуманна заморозка. ⏭ симуляція днів.</div></div>
+      <span class="go">Запустити →</span>
+    </a>
+  </div>
+
+  <h2 class="sec">🎯🛠 Завдання → deliverable</h2>
+  <div class="map">
+    <div class="col">
+      <h3>🎯 Аналіз відтоку</h3>
+      <ul>
+        <li>Q1 — івенти Day1/Day2 (когорти) → <a href="product/01-churn-analysis.html">churn-analysis §Q1</a></li>
+        <li>Q2 — 5 гіпотез + перевірка → <a href="product/01-churn-analysis.html">§Q2</a></li>
+        <li>Q3 — RICE + Confidence топ-фічі → <a href="product/01-churn-analysis.html">§Q3</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3>🛠 План дій (retention-MVP)</h3>
+      <ul>
+        <li>Гіпотеза «Як… хочу… щоб…» → <a href="../specs/001-daily-focus/spec.md">spec.md</a></li>
+        <li>UX/UI + логіка → <a href="../specs/001-daily-focus/plan.md">plan.md §1–2</a></li>
+        <li>Primary + Guardrail + A/B → <a href="../specs/001-daily-focus/plan.md">plan.md §3–4</a></li>
+        <li>Acceptance → <a href="../specs/001-daily-focus/checklist.md">checklist.md</a></li>
+        <li>To-Do 2 тижні → <a href="../specs/001-daily-focus/tasks.md">tasks.md</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="sec">📦 Фази та артефакти</h2>
+
+  <div class="phase"><span class="n done">0</span><div class="body">
+    <h4>Майстер-план + конституція</h4>
+    <div class="links"><a class="pill" href="00-master-plan.html">master-plan</a><a class="pill md" href="../.specify/memory/constitution.md">constitution.md</a></div>
+  </div></div>
+
+  <div class="phase"><span class="n done">1</span><div class="body">
+    <h4>Фундамент — `000-core-infrastructure` (Product Forge: Problem Discovery → Tasks + MVP)</h4>
+    <div class="links">
+      <a class="pill md" href="../specs/000-core-infrastructure/README.md">README</a>
+      <a class="pill md" href="../specs/000-core-infrastructure/problem-discovery/problem-statement.md">problem-statement</a>
+      <a class="pill md" href="../specs/000-core-infrastructure/research/README.md">research</a>
+      <a class="pill md" href="../specs/000-core-infrastructure/product-spec/product-spec.md">product-spec</a>
+      <a class="pill md" href="../specs/000-core-infrastructure/spec.md">spec</a>
+      <a class="pill md" href="../specs/000-core-infrastructure/plan.md">plan</a>
+      <a class="pill md" href="../specs/000-core-infrastructure/tasks.md">tasks</a>
+      <a class="pill md" href="../specs/000-core-infrastructure/review.md">review</a>
+      <a class="pill md" href="../specs/000-core-infrastructure/sync-report.md">sync-report</a>
+      <a class="pill" href="../prototype/index.html">🖱 prototype</a>
+    </div>
+  </div></div>
+
+  <div class="phase"><span class="n done">2</span><div class="body">
+    <h4>Аналіз відтоку (Q1–Q3 + RICE) + логіка рішень + виступ</h4>
+    <div class="links"><a class="pill" href="product/01-churn-analysis.html">churn-analysis (HTML)</a><a class="pill md" href="product/01-churn-analysis.md">.md</a><a class="pill" href="product/03-rationale.html">логіка рішень</a><a class="pill" href="product/04-speech.html">🎤 виступ 5 хв</a><a class="pill md" href="product/04-speech.md">.md</a></div>
+  </div></div>
+
+  <div class="phase"><span class="n done">3</span><div class="body">
+    <h4>Retention-MVP — `001-daily-focus` (forge + ТЗ + A/B-прототип)</h4>
+    <div class="links">
+      <a class="pill md" href="../specs/001-daily-focus/README.md">README</a>
+      <a class="pill md" href="../specs/001-daily-focus/spec.md">spec</a>
+      <a class="pill md" href="../specs/001-daily-focus/plan.md">plan / ТЗ</a>
+      <a class="pill md" href="../specs/001-daily-focus/tasks.md">tasks / To-Do</a>
+      <a class="pill md" href="../specs/001-daily-focus/checklist.md">checklist</a>
+      <a class="pill" href="../prototype/daily-focus.html">🖱 A/B prototype</a>
+    </div>
+  </div></div>
+
+  <div class="phase"><span class="n done">4</span><div class="body">
+    <h4>Валідація + хаб</h4>
+    <div class="links"><a class="pill" href="verification-report.html">verification</a><a class="pill" href="index.html">цей хаб</a></div>
+  </div></div>
+
+  <div class="phase"><span class="n done">5</span><div class="body">
+    <h4>AI/персоналізація track — беклог 002–006 + перша фіча в прототипі</h4>
+    <div style="color:var(--muted);font-size:.9rem;margin:.2em 0 .6em">«💡 Порада дня для Рекса» (`003`) — персональна порада угорі «Сьогодні» в основному прототипі (LLM імітовано на даних собаки + прогресі; у проді — LLM).</div>
+    <div class="links">
+      <a class="pill" href="product/02-ai-ideas-backlog.html">ai-ideas-backlog (HTML)</a>
+      <a class="pill md" href="../specs/003-ai-daily-tip/README.md">003-ai-daily-tip</a>
+      <a class="pill" href="../prototype/index.html">🖱 у прототипі</a>
+    </div>
+  </div></div>
+
+  <div class="foot">DogTrain · Product Forge → Spec Kit · усі числа — позначені оцінки · згенеровано 2026-06-09</div>
+</div>
+</body>
+</html>

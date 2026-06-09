@@ -1,0 +1,15 @@
+schema_version: 2
+feature: "005-quick-log"
+title: "Швидкий лог дня — text/voice → care events (LLM parse)"
+created_at: "2026-06-09"
+feature_mode: "lite"
+phases: { problem_discovery: completed, research: completed, product_spec: completed, revalidation: approved, bridge: completed, plan: completed, tasks: completed, implement: completed, verify: completed }
+speckit_mode: "classic"
+hypothesis: "F4 — low-friction free-text/voice logging → more engagement"
+rice_lite: 147
+depends_on: "ai-personalization-context (enabler) + foundation entities (Completion, CareEvent)"
+key_guardrail: "user confirms before write; voice privacy"
+gates:
+  - { phase: implement, decision: completed, by: orchestrator, at: "2026-06-09", note: "Швидкий лог у вкладці «Догляд»: вільний текст → розпізнані події (потребує підтвердження)." }
+  - { phase: verify, decision: completed, by: orchestrator, at: "2026-06-09", note: "Якісне завершення: A/B getVariant('quick_log') (control = без поля) + parse→confirm→write, події ai_log_parsed/confirmed. <dt-quick-log> у /prototype. Перевірено в браузері (Playwright)." }
+last_updated: "2026-06-09T00:00:00Z"

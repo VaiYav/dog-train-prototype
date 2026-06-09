@@ -1,50 +1,39 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# DogTrain Constitution
+
+> Продуктова конституція DogTrain. Усі фічі (фундамент і retention-MVP) проходять перевірку на відповідність цим принципам у фазі Plan (Constitution Check).
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. User-Value & Activation First
+Кожна фіча мусить доставляти відчутну цінність якнайшвидше. Time-to-first-value — цільова метрика, не побічна. Жодна фіча не вважається готовою без визначеної «першої перемоги» користувача та виміряної активації. Ми оптимізуємо ранню утримуваність (D1/D2), бо вона — випереджальний індикатор LTV.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Analytics-First (Measure Everything)
+Жодна ключова дія користувача не існує без продуктової події. Схема подій стабільна, версіонована й узгоджена між фічами. Рішення приймаються на даних (воронки, когорти, A/B), а не на думках. Якщо метрику не можна виміряти — це не метрика.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Humane Engagement (No Dark Patterns)
+Мотивація через прогрес, а не покарання: стріки/нагадування підтримують звичку, але **не караються** за пропуск і не маніпулюють виною. Жодного жорсткого paywall до першої перемоги. Дозволи (пуші) просимо контекстно, з поясненням цінності. Поважаємо увагу й гаманець користувача.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Simplicity & YAGNI
+Починаємо з мінімального скоупу. Rules-based рішення переважають над AI/ML, доки ML не обґрунтовано можливостями команди й часом. Валідуємо гіпотези **прототипами та експериментами до** побудови повного функціоналу. Не будуємо те, що не валідуємо.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Accessibility & Mobile-First
+Усі поверхні — mobile-first і відповідають WCAG 2.1 AA (тач-таргети ≥44px, контраст ≥4.5:1, підтримка screen reader, `prefers-reduced-motion`). Офлайн-толерантність для щоденних дій (відмітки працюють без мережі).
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Experiment-Driven Development
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+- Кожна retention-гіпотеза перевіряється контрольованим експериментом (A/B) за фіче-флагом, перш ніж котитись на 100%.
+- Для кожного експерименту наперед фіксуються: гіпотеза, Primary Metric, Guardrail Metrics, MDE й правило рішення (ship/kill).
+- Guardrail-метрики не повинні погіршуватись; якщо погіршуються — фіча не котиться, попри виграш у Primary.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## Development Workflow (SDD / Product Forge)
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+- Фічі проходять Product Forge / SpecKit flow: Problem Discovery → Research → Product Spec → Revalidation → Bridge(spec) → Plan → Tasks → Implement → Verify.
+- Людський гейт після кожної фази; кожне рішення фіксується (review.md / decision log).
+- Артефакти структуровані за теками; жодних звітів у корені; звіти — у md + html.
+- Чесність понад прикрашання: припущення позначаються явно, напруги/ризики не ховаються.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+Ця конституція має пріоритет над зручністю окремої фічі. Відхилення допустимі лише з явним обґрунтуванням у Complexity Tracking фази Plan. Зміни конституції документуються з версією, датою та причиною.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-06-09 | **Last Amended**: 2026-06-09

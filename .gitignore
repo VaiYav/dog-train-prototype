@@ -1,0 +1,10 @@
+# OS / editor junk
+.DS_Store
+*.swp
+
+# Local tool state
+.serena/
+.playwright-mcp/
+
+# Remember/handoff buffers (session-local; .remember has its own .gitignore too)
+.remember/

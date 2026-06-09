@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DogTrain — виступ на 5 хвилин</title>
+<style>
+  :root {
+    --ink:#1f2430; --muted:#5b6472; --line:#e7e3da; --bg:#fbfaf7; --card:#ffffff;
+    --amber:#e08a2b; --amber-soft:#fbe6cf; --teal:#1f8a8a; --teal-soft:#dff0ef;
+    --code:#f4f1ea; --ok:#2f8f4e; --warn:#c47d12; --crit:#c0392b;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  .wrap { max-width:880px; margin:0 auto; padding:40px 24px 80px; }
+  .topbar { background:linear-gradient(120deg,var(--amber),var(--teal)); height:6px; }
+  h1,h2,h3,h4 { line-height:1.25; color:var(--ink); }
+  h1 { font-size:2rem; margin:.2em 0 .5em; }
+  h2 { font-size:1.4rem; margin:1.9em 0 .6em; padding-bottom:.3em; border-bottom:2px solid var(--amber-soft); }
+  h3 { font-size:1.12rem; margin:1.5em 0 .4em; color:#2b3340; }
+  h4 { font-size:1rem; margin:1.2em 0 .3em; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  p,li { color:#2b3340; }
+  a { color:var(--teal); }
+  blockquote { margin:1.1em 0; padding:.6em 1.1em; background:var(--teal-soft);
+    border-left:4px solid var(--teal); border-radius:6px; color:#214b4b; }
+  blockquote p { margin:.3em 0; color:#214b4b; }
+  code { background:var(--code); padding:.12em .4em; border-radius:5px;
+    font:.86em "SF Mono",Menlo,Consolas,monospace; }
+  pre { background:#272b33; color:#e6e6e6; padding:16px 18px; border-radius:10px;
+    overflow:auto; font-size:.84rem; line-height:1.5; }
+  pre code { background:none; padding:0; color:inherit; }
+  table { border-collapse:collapse; width:100%; margin:1.2em 0; font-size:.93rem;
+    background:var(--card); border-radius:10px; overflow:hidden; box-shadow:0 1px 0 var(--line); }
+  th,td { text-align:left; padding:10px 13px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { background:var(--amber-soft); color:#6a4513; font-weight:650; }
+  tr:last-child td { border-bottom:none; }
+  td:first-child { font-weight:500; }
+  hr { border:none; border-top:1px solid var(--line); margin:2em 0; }
+  ul,ol { padding-left:1.3em; }
+  li { margin:.25em 0; }
+  .meta { color:var(--muted); font-size:.9rem; }
+  .doc-foot { margin-top:60px; padding-top:18px; border-top:1px solid var(--line);
+    color:var(--muted); font-size:.84rem; }
+  @media print { .topbar{display:none} body{background:#fff} .wrap{padding:0} }
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<div class="wrap">
+<h1 id="dogtrain-5">DogTrain — виступ на 5 хвилин</h1>
+<blockquote>
+<p>~700 слів · ~5 хв · говорити спокійно, з паузами на акцентах. Таймінг по секціях — у квадратних дужках.</p>
+</blockquote>
+<hr />
+<p><strong>[Вступ · ~30 сек]</strong></p>
+<p>Доброго дня. Коротко проведу вас через те, як ми підійшли до проблеми відтоку в DogTrain: яку логіку використали для гіпотез, чому обрали саме ці фічі, і якого впливу на поведінку очікуємо.</p>
+<p>Нагадаю проблему одним реченням: понад <strong>80% нових користувачів кидають застосунок на 2–3 день</strong>, не завершивши перший тижневий план.</p>
+<hr />
+<p><strong>[1. Логіка гіпотез · ~1.5 хв]</strong></p>
+<p>Перше й головне — ми пішли <strong>від діагнозу, а не від ідей</strong>. Спершу розібрали, що це за проблема. І це <strong>не «бракує функцій»</strong>: застосунок свою цінність дає, користувач доходить до плану. Це проблема <strong>активації та ранньої утримуваності</strong> — звичка не закріплюється.</p>
+<p>Коли подивились на поведінку когорт і галузеві дані, побачили три зламані механізми. Перший — <strong>немає тригера повернення</strong>: мало хто вмикає нагадування й відкриває апку на другий день. Другий — <strong>немає винагороди</strong> за повернення, хоча саме Day 2 у всій індустрії — це «день рішення». Третій — <strong>перевантаження</strong>: тижневий план одразу лякає. Для контексту: галузевий бенчмарк — <strong>77% кидають будь-який застосунок за перші три дні</strong>. Тобто ми в нормі, але є куди рости.</p>
+<p>Тому кожну гіпотезу формулювали за трьома правилами. Вона має <strong>цілити в конкретний зламаний механізм</strong>. Вона має бути <strong>здійсненна командою за два тижні — без кастомного AI</strong>. І вона має бути <strong>вимірювана</strong> — на подіях, які застосунок уже збирає. Формат простий: фіча — який механізм лікує — як перевіряємо через A/B.</p>
+<hr />
+<p><strong>[2. Вибір фіч і пріоритетів · ~1.5 хв]</strong></p>
+<p>Далі — пріоритизація. Ми не вибирали серцем, а <strong>порахували RICE</strong>: охоплення, вплив, впевненість, поділені на зусилля. Усі числа — <strong>позначені оцінки</strong>, бо реальних даних ще немає; але важливий порядок, а не точна цифра.</p>
+<p>Переможець — <strong>розумні щоденні нагадування</strong>. Найдешевший важіль із найбільшим охопленням, що діє рівно там, де ми втрачаємо людей — на другий-третій день. Але тригер без винагороди недопрацьовує. Тому ми упакували його разом із простим <strong>стріком</strong> — серією днів поспіль — в одну петлю: <strong>нагадування повертає, дія виконується, стрік винагороджує</strong>. Свідомо <strong>без AI</strong>, щоб вкластися у два тижні й чисто заміряти ефект.</p>
+<p>AI-фічі — порада дня, адаптація плану, чат про собаку — винесли в <strong>окремий трек</strong>, теж за RICE, але з одним правилом: спершу <strong>спільний шар персоналізації</strong>, а вже на ньому — тонкі фічі. Це здешевлює кожну й знижує ризик. І окремо додали <strong>product tour</strong> — не-AI підказки, що пояснюють інтерфейс, щоб пришвидшити розуміння цінності.</p>
+<hr />
+<p><strong>[3. Очікуваний вплив на поведінку · ~1.5 хв]</strong></p>
+<p>Тепер — як це змінює поведінку. Ми дивимось на <strong>воронку</strong>.</p>
+<p>Фундамент дає <strong>першу перемогу за дві хвилини</strong> — це піднімає активацію в нульовий день. Нагадування дають <strong>привід повернутися</strong> — це наша головна метрика, <strong>утримання на Day 2</strong>. Стрік перетворює повернення на <strong>звичку</strong> — це тягне за собою Day 7 і завершення першого тижня. Денний фокус — три завдання замість стіни тижня — <strong>знімає перевантаження</strong>. AI-контент і адаптація додають свіжості й релевантності — більше щоденних відкриттів і виконаних завдань.</p>
+<p>Важливо: ми <strong>не «накручуємо» утримання будь-якою ціною</strong>. Кожна фіча йде за фіче-флагом і через A/B, і на кожну є <strong>guardrail-метрики</strong>: щоб не зросли відписки й видалення, щоб не впав час до цінності, щоб не просів рейтинг. Це принцип <strong>humane-engagement</strong> — мотивуємо прогресом, а не тиском.</p>
+<hr />
+<p><strong>[Закриття · ~30 сек]</strong></p>
+<p>Підсумую трьома реченнями. Ми пішли <strong>від кореня</strong> проблеми, а не від списку ідей. Обрали <strong>найдешевший важіль</strong>, що б'є точно в день відтоку, і валідуємо його першим. І чесно тримаємо в голові, що всі числа — поки що гіпотези, тому передусім <strong>підняли аналітику</strong>, щоб дуже скоро рахувати ефект фактично, а не на око.</p>
+<p>Дякую.</p>
+<div class="doc-foot">DogTrain · згенеровано з Markdown · 04-speech.md</div>
+</div>
+</body>
+</html>

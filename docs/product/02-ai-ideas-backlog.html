@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DogTrain — беклог AI/LLM-фіч для ретеншену (персоналізовані)</title>
+<style>
+  :root {
+    --ink:#1f2430; --muted:#5b6472; --line:#e7e3da; --bg:#fbfaf7; --card:#ffffff;
+    --amber:#e08a2b; --amber-soft:#fbe6cf; --teal:#1f8a8a; --teal-soft:#dff0ef;
+    --code:#f4f1ea; --ok:#2f8f4e; --warn:#c47d12; --crit:#c0392b;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  .wrap { max-width:880px; margin:0 auto; padding:40px 24px 80px; }
+  .topbar { background:linear-gradient(120deg,var(--amber),var(--teal)); height:6px; }
+  h1,h2,h3,h4 { line-height:1.25; color:var(--ink); }
+  h1 { font-size:2rem; margin:.2em 0 .5em; }
+  h2 { font-size:1.4rem; margin:1.9em 0 .6em; padding-bottom:.3em; border-bottom:2px solid var(--amber-soft); }
+  h3 { font-size:1.12rem; margin:1.5em 0 .4em; color:#2b3340; }
+  h4 { font-size:1rem; margin:1.2em 0 .3em; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  p,li { color:#2b3340; }
+  a { color:var(--teal); }
+  blockquote { margin:1.1em 0; padding:.6em 1.1em; background:var(--teal-soft);
+    border-left:4px solid var(--teal); border-radius:6px; color:#214b4b; }
+  blockquote p { margin:.3em 0; color:#214b4b; }
+  code { background:var(--code); padding:.12em .4em; border-radius:5px;
+    font:.86em "SF Mono",Menlo,Consolas,monospace; }
+  pre { background:#272b33; color:#e6e6e6; padding:16px 18px; border-radius:10px;
+    overflow:auto; font-size:.84rem; line-height:1.5; }
+  pre code { background:none; padding:0; color:inherit; }
+  table { border-collapse:collapse; width:100%; margin:1.2em 0; font-size:.93rem;
+    background:var(--card); border-radius:10px; overflow:hidden; box-shadow:0 1px 0 var(--line); }
+  th,td { text-align:left; padding:10px 13px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { background:var(--amber-soft); color:#6a4513; font-weight:650; }
+  tr:last-child td { border-bottom:none; }
+  td:first-child { font-weight:500; }
+  hr { border:none; border-top:1px solid var(--line); margin:2em 0; }
+  ul,ol { padding-left:1.3em; }
+  li { margin:.25em 0; }
+  .meta { color:var(--muted); font-size:.9rem; }
+  .doc-foot { margin-top:60px; padding-top:18px; border-top:1px solid var(--line);
+    color:var(--muted); font-size:.84rem; }
+  @media print { .topbar{display:none} body{background:#fff} .wrap{padding:0} }
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<div class="wrap">
+<h1 id="dogtrain-aillm-">DogTrain — беклог AI/LLM-фіч для ретеншену (персоналізовані)</h1>
+<blockquote>
+<p>Згрумлений беклог 5 обраних AI-фіч. <strong>Усі — персоналізовані на основі минулого досвіду й даних користувача.</strong> Це не план на 2 тижні, а епіки після Daily Focus (Фаза 3).
+Дата: 2026-06-09 · Статус: BACKLOG (groomed) · Джерело даних: <a href="../../specs/000-core-infrastructure/spec.md">Consumer Contract фундаменту</a></p>
+</blockquote>
+<h2 id="0">0. Головна теза: спільний шар персоналізації</h2>
+<p>Усі 5 фіч роблять одне й те саме під капотом — <strong>беруть дані користувача й перетворюють на персональний LLM-контекст</strong>. Тому замість 5 окремих інтеграцій будуємо <strong>один спільний <code>PersonalizationContext</code></strong> (enabler), а фічі стають тонкими «обгортками» поверх нього.</p>
+<h3 id="_1">Що йде в контекст (усе вже є у фундаменті)</h3>
+<table>
+<thead>
+<tr>
+<th>Джерело</th>
+<th>Що дає персоналізації</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Dog profile</strong></td>
+<td>порода-група, вік, вага, активність, ціль, умови життя</td>
+</tr>
+<tr>
+<td><strong>Completion history</strong> (<code>Completion</code>)</td>
+<td>що виконано/пропущено, патерн днів, стрік</td>
+</tr>
+<tr>
+<td><strong>CareEvents</strong></td>
+<td>щеплення/вет/грумінг — статуси й дедлайни</td>
+</tr>
+<tr>
+<td><strong>Plan / Task</strong></td>
+<td>поточні завдання, тип, складність</td>
+</tr>
+<tr>
+<td><strong>Behavioral events</strong></td>
+<td><code>task_completed</code>, <code>app_opened</code>, <code>reminder_opened</code>, час активності</td>
+</tr>
+</tbody>
+</table>
+<pre><code>PersonalizationContext(userId) →
+  { dog, recentCompletions, skippedTasks, streak, dueCareEvents, goal, lastActive }
+  → prompt context → будь-яка з 5 LLM-фіч
+</code></pre>
+<p><strong>Чому це важливо для RICE:</strong> спільний enabler = effort кожної фічі ↓, а <strong>Confidence ↑</strong> (єдине, узгоджене джерело даних ↓ галюцинації). Тому будуємо enabler <strong>першим</strong>.</p>
+<blockquote>
+<p>Feasibility-нагадування: <strong>LLM-через-API ≠ кастомний ML.</strong> Усе нижче — промпти + наш контекст, реально малою командою. Кастомне навчання моделей не потрібне.</p>
+</blockquote>
+<hr />
+<h2 id="1">1. Фічі (кожна персоналізована)</h2>
+<h3 id="f1-llm-qa-002-ai-ask-rex">F1 — «Запитай про Рекса» (LLM Q&amp;A) · <code>002-ai-ask-rex</code></h3>
+<ul>
+<li><strong>Гіпотеза:</strong> <em>Як</em> власник із питаннями про собаку, <em>я хочу</em> запитати в чаті («чому Рекс гавкає вночі?») і отримати відповідь <strong>під мого песика</strong>, <em>щоб</em> не гуглити й довіряти застосунку щодня.</li>
+<li><strong>Персоналізація:</strong> відповідь враховує породу/вік/активність + <strong>останні виконання й пропуски</strong> («ти 3 дні не гуляв — спробуй…»).</li>
+<li><strong>Тримає (ретеншн):</strong> утиліта + довіра → привід відкривати (Habit).</li>
+<li><strong>RICE-lite:</strong> R=700 · I=1.5 · C=0.6 · E=3 → <strong>210</strong>.</li>
+<li><strong>Ризики/guardrails:</strong> галюцинації → грунтувати на даних + куратованій базі; <strong>медичне → не діагностувати, флаг «до ветеринара»</strong>; ліміт токенів/кеш.</li>
+</ul>
+<h3 id="f2-ai-003-ai-daily-tip">F2 — AI «порада дня» · <code>003-ai-daily-tip</code> ⭐</h3>
+<ul>
+<li><strong>Гіпотеза:</strong> <em>Як</em> власник, <em>я хочу</em> щодня короткий персональний інсайт про Рекса, <em>щоб</em> відкривати апку заради свіжої користі.</li>
+<li><strong>Персоналізація:</strong> під породу/вік/ціль <strong>+ прогрес</strong> («Рекс закрив 5 днів поспіль — час ускладнити прогулянку»); змінюється з історією.</li>
+<li><strong>Тримає:</strong> контент-тригер повернення (Return) — підсилює Daily Focus loop.</li>
+<li><strong>RICE-lite:</strong> R=1500 · I=1.5 · C=0.65 · E=2 → <strong>731</strong> (топ).</li>
+<li><strong>Ризики/guardrails:</strong> якість/повтори → темплейт+LLM, перевірка тону; дешева модель; кеш на день.</li>
+</ul>
+<h3 id="f3-ai-004-ai-missions">F3 — AI-челенджі/місії · <code>004-ai-missions</code></h3>
+<ul>
+<li><strong>Гіпотеза:</strong> <em>Як</em> власник, <em>я хочу</em> щотижневі цікаві місії під мою собаку («навчіть Рекса “дай п’ять”»), <em>щоб</em> мати свіжу ціль і не нудьгувати.</li>
+<li><strong>Персоналізація:</strong> наступний трюк/виклик <strong>на основі вже опанованих навичок</strong> і цілі (не пропонувати вже зроблене).</li>
+<li><strong>Тримає:</strong> новизна + ціль (Habit) — синергія зі стріком/челенджем H3.</li>
+<li><strong>RICE-lite:</strong> R=1500 · I=1.5 · C=0.6 · E=2.5 → <strong>540</strong>.</li>
+<li><strong>Ризики/guardrails:</strong> релевантність складності до віку/розміру; безпека вправ.</li>
+</ul>
+<h3 id="f4-care-005-quick-log">F4 — Швидкий лог дня (текст/голос → care-події) · <code>005-quick-log</code></h3>
+<ul>
+<li><strong>Гіпотеза:</strong> <em>Як</em> зайнятий власник, <em>я хочу</em> надиктувати «погуляли 30 хв, дав ліки», <em>щоб</em> без форм занести події догляду.</li>
+<li><strong>Персоналізація:</strong> LLM мапить вільний текст у <strong>наші сутності</strong> (<code>Completion</code>, <code>CareEvent</code>), знаючи поточний план і клички.</li>
+<li><strong>Тримає:</strong> менше тертя в логуванні → більше залучення (Habit).</li>
+<li><strong>RICE-lite:</strong> R=800 · I=1.0 · C=0.55 · E=3 → <strong>147</strong>.</li>
+<li><strong>Ризики/guardrails:</strong> помилки парсингу → підтвердження користувачем перед записом; приватність голосу.</li>
+</ul>
+<h3 id="f5-llm-006-adaptive-plan">F5 — LLM-адаптація плану · <code>006-adaptive-plan</code></h3>
+<ul>
+<li><strong>Гіпотеза:</strong> <em>Як</em> власник, чий ритм змінюється, <em>я хочу</em> щоб план підлаштовувався під те, що я <strong>реально роблю</strong>, <em>щоб</em> завдання були досяжні й релевантні.</li>
+<li><strong>Персоналізація:</strong> аналізує <strong>виконане/пропущене</strong> й коригує наступні дні (легше після серії пропусків, складніше після стріку).</li>
+<li><strong>Тримає:</strong> релевантність → completion → утримання (Habit) — найбільший Impact.</li>
+<li><strong>RICE-lite:</strong> R=1500 · I=2.0 · C=0.55 · E=3 → <strong>550</strong>.</li>
+<li><strong>Ризики/guardrails:</strong> не зламати rules-базу → <strong>LLM пропонує, rules-валідатор пропускає</strong>; не спрощувати в нуль (guardrail на к-сть завдань).</li>
+</ul>
+<hr />
+<h2 id="2-rice-lite-enabler">2. RICE-lite ранжування (з урахуванням спільного enabler)</h2>
+<table>
+<thead>
+<tr>
+<th>Ранг</th>
+<th>Фіча</th>
+<th>RICE (окремо)</th>
+<th>Після enabler (Effort ↓, Conf ↑)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🥇</td>
+<td>F2 Порада дня</td>
+<td>731</td>
+<td>↑ ще вище (E:2→1)</td>
+</tr>
+<tr>
+<td>🥈</td>
+<td>F5 Адаптація плану</td>
+<td>550</td>
+<td>↑</td>
+</tr>
+<tr>
+<td>🥉</td>
+<td>F3 Челенджі/місії</td>
+<td>540</td>
+<td>↑</td>
+</tr>
+<tr>
+<td>4</td>
+<td>F1 Запитай про Рекса</td>
+<td>210</td>
+<td>↑</td>
+</tr>
+<tr>
+<td>5</td>
+<td>F4 Швидкий лог</td>
+<td>147</td>
+<td>↑</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Числа — <strong>позначені оцінки</strong>. Головне: enabler першим зсуває всю групу вгору.</p>
+</blockquote>
+<h2 id="3-ai-guardrails-constitution-iii-humane">3. Наскрізні AI-guardrails (constitution III «Humane» + безпека)</h2>
+<ul>
+<li><strong>Грунтування:</strong> кожна відповідь спирається на дані собаки + куратовану базу; «не впевнений → до ветеринара».</li>
+<li><strong>Медичне:</strong> ніколи не діагностуємо; дисклеймер; ескалація до фахівця (особливо F1).</li>
+<li><strong>Підтвердження:</strong> дії, що пишуть дані (F4, F5), — лише після підтвердження користувачем.</li>
+<li><strong>Приватність:</strong> персоналізація лише на даних самого користувача; жодних cross-user витоків; згода.</li>
+<li><strong>Вартість/латентність:</strong> дешеві моделі для щоденного (F2), кеш, ліміт токенів.</li>
+<li><strong>Analytics-first:</strong> міряємо не лише usage, а <strong>outcome</strong> (порада/місія → дія → completion → ретеншн).</li>
+</ul>
+<h2 id="4">4. Рекомендована послідовність</h2>
+<ol>
+<li><strong><code>ai-personalization-context</code></strong> (enabler) — спільний шар даних→контекст.</li>
+<li><strong>F2 Порада дня</strong> (топ-RICE, прямо підсилює Daily Focus).</li>
+<li><strong>F5 Адаптація плану</strong> (найбільший Impact на completion).</li>
+<li><strong>F3 Місії</strong> → <strong>F1 Q&amp;A</strong> → <strong>F4 Лог</strong>.</li>
+</ol>
+<blockquote>
+<p>Кожну проганяємо через Product Forge так само, як <code>001-daily-focus</code>, і валідуємо A/B перед розкаткою (як вимагає конституція).</p>
+</blockquote>
+<h2 id="5">5. Зв'язок із роадмепом</h2>
+<p>Зареєстровано в <code>.product-forge/config.yml</code> (features <code>002-006</code> + enabler) і в <a href="../00-master-plan.md">майстер-плані</a>. Це <strong>окремі епіки після</strong> retention-MVP; додавання перерахує загальний роадмеп, не ламаючи фундамент чи Daily Focus.</p>
+<div class="doc-foot">DogTrain · згенеровано з Markdown · 02-ai-ideas-backlog.md</div>
+</div>
+</body>
+</html>

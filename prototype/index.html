@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>DogTrain — фундамент + AI (клікабельний MVP)</title>
+<link rel="stylesheet" href="shared/tokens.css">
+<link rel="stylesheet" href="foundation/foundation.css">
+</head>
+<body>
+
+<div class="phone" id="phone">
+  <div class="notch"></div>
+  <div class="statusbar"><span id="clock">9:41</span><span>DogTrain · MVP фундаменту</span></div>
+
+  <div class="viewport" id="viewport">
+
+    <!-- WELCOME -->
+    <section class="screen active" data-screen="welcome">
+      <div class="center" style="padding-top:36px">
+        <div class="big-emoji">🐶</div>
+        <h1>DogTrain</h1>
+        <p class="muted">Один застосунок для здоров'я, активності й розвитку вашого песика.</p>
+      </div>
+      <div class="listcard" style="margin-top:18px">
+        <div class="row"><span class="r-emoji">🎯</span><div><b>Персональний план</b><div class="muted" style="font-size:.82rem">під породу, вік і ціль</div></div></div>
+        <div class="row"><span class="r-emoji">✅</span><div><b>1–3 завдання на день</b><div class="muted" style="font-size:.82rem">без перевантаження</div></div></div>
+        <div class="row"><span class="r-emoji">💉</span><div><b>Нагадування про догляд</b><div class="muted" style="font-size:.82rem">щеплення, ветеринар, грумінг</div></div></div>
+      </div>
+      <button class="btn" onclick="startOnboarding()">Створити профіль собаки →</button>
+      <button class="btn secondary" onclick="resetAll()">Скинути демо</button>
+    </section>
+
+    <!-- ONBOARDING -->
+    <section class="screen" data-screen="onb">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:2px">
+        <button class="btn secondary" style="width:auto;min-height:auto;padding:4px 6px" onclick="prevStep()">←</button>
+        <div style="flex:1" class="muted" id="stepCounter">Крок 1/8</div>
+      </div>
+      <div class="progressbar"><span id="onbBar"></span></div>
+      <div id="stepBody"></div>
+      <div style="margin-top:14px">
+        <button class="btn" id="nextBtn" onclick="nextStep()">Далі</button>
+        <button class="btn secondary" id="skipBtn" onclick="skipStep()" style="display:none">Пропустити</button>
+      </div>
+    </section>
+
+    <!-- PLAN READY -->
+    <section class="screen" data-screen="plan">
+      <div class="center" style="padding-top:30px">
+        <div class="big-emoji">🎉</div>
+        <h1 id="planTitle">План готовий!</h1>
+        <p class="muted" id="planSub"></p>
+      </div>
+      <div class="listcard"><div class="row center" style="justify-content:center"><b id="planMeta">7 днів · 3 завдання/день</b></div></div>
+      <div class="trialbar">✨ <span id="trialMsg">Trial 7 днів уже активний — без картки, повний доступ.</span></div>
+      <button class="btn" onclick="goToday(true)">Почати сьогодні →</button>
+    </section>
+
+    <!-- TODAY -->
+    <section class="screen" data-screen="today">
+      <div class="topbar">
+        <h2 id="todayHello">Привіт! 🐶</h2>
+        <span class="chip" id="streakChip" title="Стрік оживе у Фазі 3 (retention-MVP)">🔥 0</span>
+      </div>
+      <div class="trialbar" id="todayTrial">✨ Trial: 7 днів лишилось</div>
+      <div class="ring-wrap">
+        <div class="ring" id="ring" data-label="0/3"></div>
+        <div><b>Сьогодні · <span id="dayName">Пн</span></b><div class="muted" style="font-size:.84rem">Виконай завдання — і Рекс щасливий 🐾</div></div>
+      </div>
+      <dt-ai-tip></dt-ai-tip>          <!-- 003 -->
+      <div id="taskList"></div>
+      <dt-adaptive></dt-adaptive>      <!-- 006 -->
+      <button class="btn secondary" onclick="show('week')">Переглянути весь тиждень →</button>
+    </section>
+
+    <!-- WEEK -->
+    <section class="screen" data-screen="week">
+      <div style="display:flex;align-items:center;gap:8px"><button class="btn secondary" style="width:auto;padding:4px 6px" onclick="show('today')">←</button><h2>Тижневий план</h2></div>
+      <div class="listcard" id="weekList"></div>
+      <p class="muted" style="font-size:.82rem">Денний фокус — головний. Тиждень тут, щоб бачити картину, а не як стіна завдань.</p>
+    </section>
+
+    <!-- CARE -->
+    <section class="screen" data-screen="care">
+      <h2>Догляд та здоров'я</h2>
+      <dt-quick-log></dt-quick-log>    <!-- 005 -->
+      <div class="listcard" id="careList"></div>
+      <button class="btn ghost" onclick="addCareDemo()">+ Додати подію догляду</button>
+      <p class="muted" style="font-size:.82rem">Локальні нагадування про щеплення, ветеринара, грумінг і дегельмінтизацію.</p>
+    </section>
+
+    <!-- PROGRESS -->
+    <section class="screen" data-screen="progress">
+      <h2>Прогрес</h2>
+      <dt-missions></dt-missions>      <!-- 004 -->
+      <div class="ring-wrap">
+        <div class="ring" id="ring2" data-label="0/3"></div>
+        <div><b id="progToday">Сьогодні: 0/3</b><div class="muted" style="font-size:.84rem" id="progStreak">Днів поспіль: 0</div></div>
+      </div>
+      <div class="listcard" id="progWeek"></div>
+      <div class="trialbar" id="progTrial">✨ Trial активний</div>
+      <button class="btn secondary" onclick="simulateTrialEnd()">⏭ Демо: завершити trial</button>
+    </section>
+
+    <!-- PAYWALL -->
+    <section class="screen" data-screen="paywall">
+      <div class="center" style="padding-top:40px">
+        <div class="big-emoji">🔒</div>
+        <h1>Trial завершено</h1>
+        <p class="muted">Продовжуй піклуватись про Рекса з Premium. Твій прогрес та історія лишаються.</p>
+      </div>
+      <button class="btn" onclick="trackEvent('subscribe_clicked');show('today')">Оформити Premium</button>
+      <button class="btn secondary" onclick="show('today')">Пізніше</button>
+    </section>
+
+  </div><!-- /viewport -->
+
+  <!-- tab bar -->
+  <nav class="tabbar" id="tabbar" style="display:none">
+    <button data-tab="today" onclick="show('today')"><span class="ti">🏠</span>Сьогодні</button>
+    <button data-tab="care" onclick="show('care')"><span class="ti">💊</span>Догляд</button>
+    <button data-tab="progress" onclick="show('progress')"><span class="ti">📈</span>Прогрес</button>
+  </nav>
+
+  <!-- push opt-in sheet -->
+  <div class="overlay" id="pushSheet">
+    <div class="sheet center">
+      <div class="big-emoji">🔔</div>
+      <h2>Нагадати про прогулянку?</h2>
+      <p class="muted">Надсилатимемо м'яке нагадування, щоб ти не пропустив щоденний догляд за Рексом.</p>
+      <button class="btn" onclick="pushDecision(true)">Так, нагадувати</button>
+      <button class="btn secondary" onclick="pushDecision(false)">Не зараз</button>
+    </div>
+  </div>
+
+  <!-- confetti -->
+  <div class="confetti" id="confetti"></div>
+
+  <!-- 002 Ask Rex (FAB + chat overlay live inside this element) -->
+  <dt-ask-rex></dt-ask-rex>
+
+  <!-- 007 Product Tour (coach marks: "?" button + highlight overlay live inside this element) -->
+  <dt-product-tour></dt-product-tour>
+
+  <!-- events panel -->
+  <button class="evtoggle" id="evtoggle" style="display:none" onclick="toggleEvents()">📊 events</button>
+  <div class="evdrawer" id="evdrawer">
+    <header><b>trackEvent() — лог подій</b><button class="btn secondary" style="width:auto;color:#9fe3da" onclick="toggleEvents()">Закрити ✕</button></header>
+    <div class="log" id="evlog"></div>
+    <div class="abpanel" id="abPanel"></div>
+    <div style="padding:10px 14px;border-top:1px solid #2a323c;font-size:11px;color:#6b7b88">Імітація PostHog: ці події у проді знімалися б SDK. Кожна AI-фіча має власну A/B-поверхню (<code>getVariant</code>); у <i>control</i> поверхні немає.</div>
+  </div>
+
+</div>
+
+<div class="sidenote">
+  <h3>🐾 DogTrain — фундамент + AI (клікабельний)</h3>
+  <p>Це <b>Фаза 1 (інфраструктура)</b> + AI-фічі (002–006) з Product Forge flow. Пройди потік:</p>
+  <p>Профіль → <b>8 кроків</b> онбордингу → план → <b>«Сьогодні» (3 завдання)</b> → відміть перше = <b>перша перемога</b> → opt-in пушів → 3/3 свято.</p>
+  <p>AI-фічі — це <code>&lt;dt-*&gt;</code> веб-компоненти (по файлу на фічу у <code>foundation/features/</code>).</p>
+  <p>Тисни <code>📊 events</code> внизу — <b>аналітика</b> + перемикач A/B <code>ask_rex</code>.</p>
+  <p><a href="daily-focus.html">→ Daily Focus A/B прототип (001)</a></p>
+</div>
+
+<!-- features first (define <dt-*> elements; their connectedCallback wires DOM only, no globals),
+     then app.js LAST (defines globals + boots; by now every element is upgraded) -->
+<script src="foundation/features/ai-tip.js"></script>
+<script src="foundation/features/adaptive.js"></script>
+<script src="foundation/features/missions.js"></script>
+<script src="foundation/features/quick-log.js"></script>
+<script src="foundation/features/ask-rex.js"></script>
+<script src="foundation/features/product-tour.js"></script>
+<script src="foundation/app.js"></script>
+</body>
+</html>
