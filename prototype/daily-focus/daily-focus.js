@@ -7,7 +7,7 @@ const TASKS=[
 ];
 let S=fresh();
 function fresh(){return{variant:'control',day:1,streak:0,freeze:1,doneToday:[],firstWin:false,
-  reminderOn:false,reminderTime:'Вечір 18:00',prevDayDone:true,events:[],lastVarSwitch:0};}
+  reminderOn:false,reminderTime:'Вечір 18:00',events:[]};}
 
 function setVariant(v){S=fresh();S.variant=v;
   document.getElementById('segC').classList.toggle('on',v==='control');

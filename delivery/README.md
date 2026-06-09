@@ -19,7 +19,7 @@
 
 | Хочу побачити | Де |
 |---|---|
-| 🖱 **Клікабельні прототипи** | [Фундамент MVP](../specs/000-core-infrastructure/prototype/index.html) · [Daily Focus A/B](../specs/001-daily-focus/prototype/index.html) |
+| 🖱 **Клікабельні прототипи** | [Фундамент MVP](../prototype/index.html) · [Daily Focus A/B](../prototype/daily-focus.html) |
 | 🎯 Аналіз відтоку (Q1–Q3 + RICE) | [01-churn-analysis](../docs/product/01-churn-analysis.md) |
 | 🛠 ТЗ обраної фічі (MVP) | [001-daily-focus/plan.md](../specs/001-daily-focus/plan.md) + [spec.md](../specs/001-daily-focus/spec.md) |
 | 🧩 **Декомпозиція на задачі** (2 тижні) | [01-execution-plan](./01-execution-plan.md) |
@@ -42,7 +42,7 @@
 | Пункт | Де | Статус |
 |---|---|---|
 | Гіпотеза «Як… хочу… щоб…» | [spec.md](../specs/001-daily-focus/spec.md) | ✅ |
-| UX/UI-ідеї + шаблони | [plan.md §1](../specs/001-daily-focus/plan.md) + [прототип](../specs/001-daily-focus/prototype/index.html) | ✅ |
+| UX/UI-ідеї + шаблони | [plan.md §1](../specs/001-daily-focus/plan.md) + [прототип](../prototype/daily-focus.html) | ✅ |
 | Логіка реалізації (кроки + система) | [plan.md §2](../specs/001-daily-focus/plan.md) | ✅ |
 | Primary + Guardrail метрики | [plan.md §3](../specs/001-daily-focus/plan.md) | ✅ |
 | Acceptance criteria | [checklist.md](../specs/001-daily-focus/checklist.md) | ✅ |

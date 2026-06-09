@@ -13,7 +13,7 @@
 | 5. Plan / ТЗ | ✅ | [plan.md](./plan.md) |
 | 5B. Tasks / 2-week To-Do | ✅ | [tasks.md](./tasks.md) |
 | Acceptance checklist | ✅ | [checklist.md](./checklist.md) |
-| 6. Implement (MVP) | ✅ clickable A/B | [prototype/index.html](../../prototype/daily-focus.html) |
+| 6. Implement (MVP) | ✅ clickable A/B | [prototype/daily-focus.html](../../prototype/daily-focus.html) |
 
 ## Що це
 Поверх «Сьогодні» фундаменту: **щоденне нагадування + гуманний стрік**, під A/B-флагом `daily_focus`. Замикає петлю **тригер → дія → винагорода** проти D2-обриву.
@@ -25,7 +25,7 @@
 | Вимога | Файл |
 |---|---|
 | Гіпотеза (формат) | [spec.md](./spec.md) §Гіпотеза |
-| UX/UI ідеї + шаблони | [plan.md](./plan.md) §1 + [prototype/](../../prototype/daily-focus.html) |
+| UX/UI ідеї + шаблони | [plan.md](./plan.md) §1 + [prototype/daily-focus.html](../../prototype/daily-focus.html) |
 | Логіка реалізації | [plan.md](./plan.md) §2 |
 | Primary + Guardrail метрики | [plan.md](./plan.md) §3 |
 | Acceptance criteria | [spec.md](./spec.md) + [checklist.md](./checklist.md) |

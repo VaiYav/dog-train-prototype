@@ -90,7 +90,7 @@
 <p><strong>Як рахуємо різницю:</strong> будуємо у PostHog (а) воронку активації D0, (б) когортну retention-матрицю, (в) для кожної події з Q1 рахуємо <strong>lift</strong>: наскільки наявність події корелює з D7-retention. Події з найбільшою розбіжністю retained vs churned = найвищі важелі для фіч (Q2).</p>
 <hr />
 <h2 id="q1-day-1-day-2">Q1. Які продуктові івенти Day 1 / Day 2 порівнюємо між когортами</h2>
-<p>Нижче — конкретні події (усі <strong>вже емітяться фундаментом</strong>), згруповані за днями. Для кожної — очікуваний напрям (retained &gt; churned) і <strong>чому вона діагностична</strong>.</p>
+<p>Нижче — конкретні події, згруповані за днями. Для кожної — очікуваний напрям (retained &gt; churned) і <strong>чому вона діагностична</strong>. Майже всі <strong>вже емітяться фундаментом</strong>; єдиний виняток — <code>notification_opened</code> (подія #8) — це <strong>нова подія Фази 3</strong> (позначено в таблиці), бо щоденних engagement-нагадувань фундамент ще не шле.</p>
 <h3 id="day-1">Day 1 — сигнали активації</h3>
 <table>
 <thead>
@@ -112,7 +112,7 @@
 </tr>
 <tr>
 <td>2</td>
-<td><strong><code>onboarding_completed</code> / <code>plan_generated</code></strong></td>
+<td><strong><code>plan_generated</code></strong> (= <code>onboarding_completed</code> у research-шарі)</td>
 <td>Чи дійшов до кінця 8 кроків і отримав план</td>
 <td>retained &gt; churned</td>
 <td>Прямо показує drop-off у довгому (8 кроків) онбордингу</td>
@@ -126,7 +126,7 @@
 </tr>
 <tr>
 <td>4</td>
-<td><strong><code>tasks_completed_d0</code></strong> (0/1/2/3)</td>
+<td><strong><code>tasks_completed_d0</code></strong> (derived: к-сть <code>task_completed{day_index=0}</code>, 0–3)</td>
 <td>Глибина залучення першого дня</td>
 <td>retained має 2–3, churned 0–1</td>
 <td>Відрізняє «спробував» від «зробив»; <code>day_completed</code> (3/3) — сильний сигнал</td>
@@ -168,17 +168,17 @@
 </tr>
 <tr>
 <td>8</td>
-<td><strong><code>notification_opened</code></strong> (D2, якщо пуш увімкнено)</td>
+<td><strong><code>notification_opened</code></strong> (D2 — <em>нова</em> подія Фази 3; фундамент шле лише <code>notification_permission</code>/<code>care_reminder_fired</code>)</td>
 <td>Чи спрацював тригер повернення</td>
 <td>retained &gt; churned</td>
-<td>Перевіряє, чи <strong>нагадування реально повертає</strong> (гіпотеза H2)</td>
+<td>Перевіряє, чи <strong>нагадування реально повертає</strong> (гіпотеза H2); інструментується разом із самим нагадуванням</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Мінімум 3 ключові, на яких я б сфокусувався:</strong> <strong><code>first_win</code> (D0)</strong>, <strong><code>notification_permission</code> (D0)</strong> і <strong><code>app_opened</code> D2 → <code>task_completed</code> D2</strong>. Гіпотеза: найбільший розрив retained/churned буде саме тут — мало хто з churned зробив першу перемогу, увімкнув нагадування й мав тригер повернутись на D2. Це напряму веде до гіпотез Q2.</p>
 <hr />
 <h2 id="q2">Q2. П'ять гіпотез проти відтоку</h2>
-<p>Формат кожної: <strong>гіпотеза → чому вирішує проблему → як перевіряємо</strong>. Усі — <strong>без кастомного AI/ML</strong> (обмеження). Фундамент уже дає поверхню «Сьогодні», події й A/B-хук, тож усе валідовне A/B-тестом.</p>
+<p>Формат кожної: <strong>гіпотеза → чому вирішує проблему → як перевіряємо</strong>. Усі — <strong>без кастомного AI/ML</strong> (обмеження). Фундамент уже дає поверхню «Сьогодні», події й A/B-хук, тож гіпотези валідовні A/B-тестом (там, де гіпотеза вводить нову подію — як нагадування H2 з <code>reminder_*</code> — її інструментують у Фазі 3).</p>
 <blockquote>
 <p>Що вже є у фундаменті (Фаза 1) і <strong>не</strong> є окремою гіпотезою: денний фокус «Сьогодні» (3 завдання замість стіни тижня), нагадування <strong>догляду</strong> (щеплення/вет/грумінг), trial. Гіпотези нижче — <strong>додаткові важелі</strong> поверх цього.</p>
 </blockquote>
@@ -192,19 +192,19 @@
 <ul>
 <li><strong>Що:</strong> щоденне локальне/пуш-нагадування під план («Час прогулянки з Рексом 🐶») у зручний час; контекстний opt-in після першої перемоги.</li>
 <li><strong>Чому вирішує:</strong> <strong>№1 важіль утримання</strong> — цінний тригер, прив'язаний до рутини. Churned-когорта не повертається, бо <strong>немає тригера</strong>. Нагадування створює привід відкрити апку на D2/D3 саме тоді, коли гине 80%.</li>
-<li><strong>Як перевіряємо:</strong> A/B «нагадування ON vs holdout». Primary — <strong>D2/D3 retention</strong>; вимірюємо <code>notification_opened → session → task_completed</code>; guardrail — opt-out/uninstall.</li>
+<li><strong>Як перевіряємо:</strong> A/B «нагадування ON vs holdout». Primary — <strong>D2/D3 retention</strong> (рахується з <code>app_opened</code> фундаменту); вимірюємо ланцюг <code>reminder_fired → reminder_opened → app_opened → task_completed</code> (події нагадування — нові у Фазі 3); guardrail — opt-out/uninstall.</li>
 </ul>
 <h3 id="h3-7-">H3 — «7-денний стартовий челендж» із фінішною винагородою</h3>
 <ul>
 <li><strong>Що:</strong> перший тиждень оформлений як челендж із чітким фінішем і нагородою (розблокування/бейдж «Перший тиждень»).</li>
 <li><strong>Чому вирішує:</strong> проблема дослівно — «<strong>не завершили перший тижневий план</strong>». Ціль + винагорода підвищують завершення тижня (ефект мети, прогрес-бар).</li>
-<li><strong>Як перевіряємо:</strong> A/B «челендж-обгортка vs звичайний план». Primary — <strong>completion 1-го тижня</strong> + D7; secondary — частка, що дійшла до Day 7-завдання.</li>
+<li><strong>Як перевіряємо:</strong> A/B «челендж-обгортка vs звичайний план». Primary — <strong>completion 1-го тижня</strong>; secondary — D7 і частка, що дійшла до Day 7-завдання.</li>
 </ul>
 <h3 id="h4-ttv">H4 — Швидший онбординг / прогресивний профайлинг (активація/TTV)</h3>
 <ul>
 <li><strong>Що:</strong> скоротити шлях до першої перемоги: 8 кроків → 3–4 ключові до плану, решту запитати <strong>після</strong> активації (прогресивно).</li>
 <li><strong>Чому вирішує:</strong> 8 кроків — вище за бенчмарк 3–5; per-step drop-off (ми самі це позначили як ризик) ріже активацію; коротший TTV → вища активація → вище утримання.</li>
-<li><strong>Як перевіряємо:</strong> A/B «8 кроків vs 4 кроки + дозбір пізніше». Primary — <strong>onboarding completion + activation (<code>first_win</code> D0)</strong> → D2.</li>
+<li><strong>Як перевіряємо:</strong> A/B «8 кроків vs 4 кроки + дозбір пізніше». Primary — <strong>activation (<code>first_win</code> D0)</strong>; secondary — onboarding completion і D2.</li>
 </ul>
 <h3 id="h5-">H5 — Контекстне «чому це важливо» + міні-поради під породу/вік</h3>
 <ul>
@@ -215,7 +215,7 @@
 <hr />
 <h2 id="q3-rice-confidence">Q3. Пріоритизація RICE + обґрунтування Confidence</h2>
 <p><strong>Метод RICE:</strong> <code>RICE = (Reach × Impact × Confidence) / Effort</code>.
-<strong>Припущення (позначені):</strong> ~2 000 нових інсталів/міс; ~75% доходять до екрана «Сьогодні» → Reach ≈ 1 500/міс для post-onboarding-фіч, 2 000 для самого онбордингу. Impact: 3=масивний, 2=високий, 1.5=помітний, 1=середній. Confidence: 100/85/80/70/55%. Effort — у людино-тижнях для команди (2 розробники + 0.5 дизайнер + 0.5 аналітик), вікно 2 тижні.</p>
+<strong>Припущення (позначені):</strong> ~2 000 нових інсталів/міс; ~75% доходять до екрана «Сьогодні» → Reach ≈ 1 500/міс для post-onboarding-фіч, 2 000 для самого онбордингу. Impact: 3=масивний, 2=високий, 1.5=помітний, 1=середній. Confidence: 100/85/80/70/55%. Effort — у тижнях вікна команди (2 розробники + 0.5 дизайнер + 0.5 аналітик; повне вікно = 2 тижні, тобто 2.0), а не в чистих людино-тижнях.</p>
 <table>
 <thead>
 <tr>
@@ -278,10 +278,11 @@
 </table>
 <blockquote>
 <p>Розрахунок топа: 1500 × 2.0 × 0.85 / 2.0 = <strong>1275</strong>.</p>
+<p><strong>Конвенція Reach + чутливість рангу (чесно).</strong> Reach тут = «кому фічу <em>пропонують</em>»: opt-in пушів для H2 не ріже Reach, а врахований нижче в Confidence/guardrails. Це свідомий вибір, і він <strong>впливає на ранг №1</strong>: якби натомість дисконтувати Reach H2 на реалістичний opt-in iOS (~50–60% → ефективний ~750–900), RICE H2 впав би до ~510–765 і міг би опуститись нижче H4 (840). Тобто перевага H2 над H4 <strong>чутлива до opt-in пушів</strong> — саме тому контекстний запит дозволу після першої перемоги і guardrail на opt-out винесені в план A/B як обов'язкові (мітигація стелі).</p>
 </blockquote>
 <h3 id="mvp">Переможець і пакування MVP</h3>
 <p><strong>Топ за RICE — H2 (розумні щоденні нагадування):</strong> найдешевший важіль із найвищим reach і найсильнішою доказовою базою. Це <strong>return-тригер</strong>, що діє рівно в точці D2-обриву.</p>
-<p><strong>Але</strong> тригер без винагороди недопрацьовує. Тому <strong>MVP-фічу збираю як «Daily Focus loop»</strong>: <strong>H2 (нагадування) як ядро + мінімальний стрік з H1 як винагорода за повернення.</strong> Чому це чесно й не «scoping creep»: поверхня «Сьогодні» і події вже є у фундаменті, тож стрік — <strong>майже нульовий маржинальний effort</strong> поверх нагадування. Петля стає повною: <strong>тригер (нагадування) → дія (завдання) → винагорода (стрік/прогрес)</strong>. Саме її форджимо у Фазі 3 як <code>001-daily-focus</code>. Основна гіпотеза під тестом — H2.</p>
+<p><strong>Але</strong> тригер без винагороди недопрацьовує. Тому <strong>MVP-фічу збираю як «Daily Focus loop»</strong>: <strong>H2 (нагадування) як ядро + мінімальний стрік з H1 як винагорода за повернення.</strong> Чому це чесно й не «scoping creep»: поверхню «Сьогодні», сутність <code>Completion</code> і події вже надає фундамент, тож стрік — <strong>знижений (субадитивний), а не нульовий, маржинальний effort</strong> поверх нагадування: net-new лише механіка стріку (computeStreak, freeze-токен, мікросвята, 4 події), що вкладається в трек одного розробника за 2-тижневе вікно. (Standalone H1 коштує 3.0 саме через ці механіки + власну UI-поверхню, яких в add-on не дублюємо.) Петля стає повною: <strong>тригер (нагадування) → дія (завдання) → винагорода (стрік/прогрес)</strong>. Саме її форджимо у Фазі 3 як <code>001-daily-focus</code>. Основна гіпотеза під тестом — H2.</p>
 <h3 id="confidence-85-h2">Обґрунтування Confidence топ-фічі (85% для H2)</h3>
 <p>Чому <strong>високо (85%)</strong>:
 - <strong>Конвергентні зовнішні докази:</strong> нагадування/тригери стабільно називають <strong>№1 важелем</strong> утримання; «Day 2 = commitment — винагороджуй повернення»; «цінні (не порожні) пуші» працюють краще за open-driven. Це не одне джерело, а збіг кількох (<a href="../../specs/000-core-infrastructure/research/metrics-roi.md">research/metrics-roi</a>).

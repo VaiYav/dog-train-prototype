@@ -78,6 +78,7 @@ disappears, so ES modules would also work there if ever wanted. (Prod AI backend
   (constitution IV: rules-based until ML is justified). Prod = `PersonalizationContext` + curated KB →
   LLM with a safety filter.
 - **Ask Rex safety guardrail** (constitution III): medical topics → vet redirect, never a diagnosis/dose.
+- **Daily Focus demo scope.** The A/B toggle, contextual reminder opt-in (after first win), streak/freeze loop and `variant`-tagged event log are demoed. **Reminder opt-out (AC-6) and reminder-time change in Settings (FR-008, Should-Have)** are specified in `specs/001-daily-focus/` but intentionally out of this click-demo's scope.
 - **Prod hardening TODO:** the demo interpolates the user-entered dog name into `innerHTML` in places
   (self-XSS only, local single-user demo). The Ask Rex chat already renders the user's *question* via
   `textContent`. Before any real multi-user deployment, sanitize/escape all user-supplied strings.
